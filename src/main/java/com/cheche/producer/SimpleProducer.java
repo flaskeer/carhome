@@ -9,6 +9,8 @@ import java.util.List;
 import java.util.Properties;
 import static com.cheche.common.Commons.*;
 /**
+ *
+ * 生产者
  * Created by user on 2016/2/23.
  */
 public class SimpleProducer {
