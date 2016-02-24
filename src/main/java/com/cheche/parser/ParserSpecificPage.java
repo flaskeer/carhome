@@ -5,7 +5,6 @@ import com.google.common.collect.Table;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import us.codecraft.webmagic.selector.Html;
-
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
@@ -62,7 +61,7 @@ public class ParserSpecificPage {
             }
             builder.append("\n");
         }
-        writeStringtoFile("D:/tmp/carhomedata.txt",builder.toString(),true);
+//        writeStringtoFile("D:/tmp/carhome_stopsale_data.txt",builder.toString(),true);
         return builder.toString();
     }
 
@@ -160,7 +159,7 @@ public class ParserSpecificPage {
 
     public static void main(String[] args) {
         try {
-            List<String> links = readLink("D:/tmp/config.txt");
+            List<String> links = readLink("D:/tmp/stopsaleconfig.txt");
             updateData(links,"D:/tmp/error_url.txt");
         } catch (IOException e) {
             logger.warn(e.getMessage());
