@@ -42,8 +42,6 @@ public class SimpleProducer {
         } catch (IOException e) {
             e.printStackTrace();
         }
-//        KeyedMessage<Integer,String> data = new KeyedMessage<Integer, String>(topic,builder.toString());
-//        producer.send(data);
         producer.close();
     }
 }

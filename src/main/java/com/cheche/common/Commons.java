@@ -34,6 +34,11 @@ public class Commons {
 
     }
 
+    public static Document getDocument(String url,String charset){
+        String content = HttpClientUtil.sendHttpGet(url,charset);
+        return Jsoup.parse(content);
+    }
+
     /**
      * 将字符串写入文件
      * @param path  文件路径

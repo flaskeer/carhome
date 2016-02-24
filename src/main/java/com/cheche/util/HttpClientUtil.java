@@ -34,11 +34,12 @@ public class HttpClientUtil {
             .build();
 
     /**
+     * 汽车之家中网页编码格式是gb2312
      * 发送get请求 response里拿到的编码格式是GB2312
      * @param httpGet
      * @return
      */
-    private static String sendGet(HttpGet httpGet){
+    private static String sendGet(HttpGet httpGet,String charset){
         CloseableHttpResponse response = null;
         HttpEntity entity = null;
         String content = null;
@@ -55,7 +56,8 @@ public class HttpClientUtil {
                     throw e;
                 }
             }
-            content = new String(outputStream.toByteArray(),"gbk");
+            //gbk是gb2312的扩展字符集  用来防止某些字显示乱码的问题
+            content = new String(outputStream.toByteArray(),charset);
             EntityUtils.consumeQuietly(entity);
         } catch (IOException e) {
             e.printStackTrace();
@@ -79,9 +81,25 @@ public class HttpClientUtil {
         httpClient.close();
     }
 
+    /**
+     * 专门用来获取汽车之家的请求
+     * @param httpUrl
+     * @return
+     */
     public static String sendHttpsGet(String httpUrl) {
         HttpGet httpGet = new HttpGet(httpUrl);// 创建get请求
-        return sendGet(httpGet);
+        return sendGet(httpGet,"gbk");
+    }
+
+    /**
+     * 用来处理通用的请求
+     * @param url
+     * @param charset
+     * @return
+     */
+    public static String sendHttpGet(String url,String charset){
+        HttpGet httpGet = new HttpGet(url);
+        return sendGet(httpGet,charset);
     }
 
     public static void main(String[] args) {
