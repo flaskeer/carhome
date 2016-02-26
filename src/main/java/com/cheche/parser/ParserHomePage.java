@@ -2,8 +2,6 @@ package com.cheche.parser;
 
 import static com.cheche.common.Commons.*;
 
-import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONObject;
 import com.cheche.model.Price;
 import com.google.common.collect.Lists;
 import org.jsoup.nodes.Document;
@@ -66,7 +64,7 @@ public class ParserHomePage {
         String newPrice = dtElems.get(0).select("a").get(0).text();
         String carType = dtElems.get(0).select("a").get(1).text();
         String oldPrice = oldList.get(0) + "-" + oldList.get(1);
-        String carSource = oldList.get(3);
+        String carSource = oldList.get(2);
         String engine = document.select(".autoseries-info > dl > dd").get(1).text();
         String specData = document.select(".autoseries-info > dl > dd").get(2).text();
         String score = document.select(".koubei-score > a").get(1).text();
@@ -129,15 +127,19 @@ public class ParserHomePage {
         if(matcher.find()){
             content = matcher.group(1);
         }
-        JSONObject jsonObject = JSON.parseObject(content);
-        JSONObject result = jsonObject.getJSONObject("result");
-        String minPrice = result.getString("minPrice");
-        String maxPrice = result.getString("maxPrice");
-        String count = result.getString("count");
+        content = filter(content);
+        String minPrice = content.substring(content.indexOf("minPrice:")+9, content.indexOf(",maxPrice"));
+        String maxPrice = content.substring(content.indexOf("maxPrice:")+9, content.indexOf(",url"));
+        String count = content.substring(content.indexOf("count:")+6, content.indexOf("}"));
         list.add(minPrice);
         list.add(maxPrice);
         list.add(count);
         return list;
+    }
+
+    private static String filter(String content) {
+        String cont = content.replaceAll("&", "").replaceAll("quot;","");
+        return cont;
     }
 
 
@@ -157,10 +159,10 @@ public class ParserHomePage {
 //        }
         //单个网页测试
         try {
-            getJsonp("http://www.autohome.com.cn/3170/");
+//            getJsonp("http://www.autohome.com.cn/3170/");
 //            Document document = getDocument("http://api.che168.com/auto/ForAutoCarPCInterval.ashx?callback=che168CallBack&_appid=cms&sid=3170&yid=0&pid=110000");
 //            System.out.println(document);
-//            parseHomePage("http://www.autohome.com.cn/2097/","");
+            parseHomePage("http://www.autohome.com.cn/3343/#levelsource=000000000_0&pvareaid=101594","");
         } catch (IOException e) {
             e.printStackTrace();
         }
