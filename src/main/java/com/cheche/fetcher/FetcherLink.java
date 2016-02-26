@@ -56,6 +56,19 @@ public class FetcherLink {
         return singlePageLinks;
     }
 
+    private static void getImgAndBrand(String url) throws IOException {
+        StringBuilder builder = new StringBuilder();
+        Document document = getDocument(url);
+        Elements dlElems = document.select("dl");
+        for (Element dlElem : dlElems) {
+            String imgSrc = dlElem.select("dt > a > img").attr("src");
+            String brand = dlElem.select("dd > div").text();
+            builder.append("\"").append(imgSrc).append("\"").append(",")
+                   .append("\"").append(brand).append("\"").append(",");
+        }
+
+    }
+
     /**
      * 用来将所有车型写入文件
      */

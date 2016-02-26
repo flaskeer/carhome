@@ -17,6 +17,11 @@ public class Price {
     private String carType; //车型
     private String carSource; // 车源
     private String score; //用户评分
+    private String bigImg;  //大图
+    private String factImg;  //实拍图片
+    private String videoImg; //视频图片
+    private String engine; //发动机
+    private String specData;  //具体的数据
 
     public String getCarName() {
         return carName;
@@ -66,6 +71,46 @@ public class Price {
         this.carType = carType;
     }
 
+    public String getBigImg() {
+        return bigImg;
+    }
+
+    public void setBigImg(String bigImg) {
+        this.bigImg = bigImg;
+    }
+
+    public String getVideoImg() {
+        return videoImg;
+    }
+
+    public void setVideoImg(String videoImg) {
+        this.videoImg = videoImg;
+    }
+
+    public String getFactImg() {
+        return factImg;
+    }
+
+    public void setFactImg(String factImg) {
+        this.factImg = factImg;
+    }
+
+    public String getEngine() {
+        return engine;
+    }
+
+    public void setEngine(String engine) {
+        this.engine = engine;
+    }
+
+    public String getSpecData() {
+        return specData;
+    }
+
+    public void setSpecData(String specData) {
+        this.specData = specData;
+    }
+
     @Override
     public String toString() {
         return MoreObjects.toStringHelper(this)
@@ -75,6 +120,11 @@ public class Price {
                 .add("carType", carType)
                 .add("carSource", carSource)
                 .add("score", score)
+                .add("bigImg", bigImg)
+                .add("factImg", factImg)
+                .add("videoImg", videoImg)
+                .add("engine", engine)
+                .add("specData", specData)
                 .toString();
     }
 }
