@@ -3,6 +3,7 @@ package com.cheche.parser;
 import static com.cheche.common.Commons.*;
 
 import com.cheche.model.Price;
+import com.cheche.model.StopSale;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import org.jsoup.nodes.Document;
@@ -57,6 +58,13 @@ public class ParserHomePage {
         return homeData;
     }
 
+    public static void parseGrayPage(String url) throws IOException {
+        String link = stopSaleLink(url, "");
+        List<StopSale> stopSales = ParserStopSalePage.parseStopSaleData(link, "");
+
+
+    }
+
     /**
      * 处理汽车首页需要的数据 将其组装成price model
      * @param document
@@ -107,15 +115,15 @@ public class ParserHomePage {
      * @param path   保存的文件路径
      * @throws IOException
      */
-    private static void stopSaleLink(String url,String path) throws IOException {
+    private static String stopSaleLink(String url,String path) throws IOException {
         Document document = getDocument(url);
         String href = document.select(".other-car > .link-sale").attr("href");
-        if(href.isEmpty()) return;
+        if(href.isEmpty()) return null;
         String link = "http://www.autohome.com.cn" + href;
         if(logger.isDebugEnabled()){
             logger.debug("stop sale link is:{}",link);
         }
-        writeStringtoFile(path,link + "\n",true);
+        return link;
     }
 
     private static List<String> getJsonp(String url) throws IOException {

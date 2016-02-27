@@ -131,23 +131,34 @@ public class FetcherLink {
                 Pair<Map<String, String>, Map<String, String>> mapPair = fetchSinglePageLink(pageUrl);
                 Map<String, String> singleMap = mapPair.getLeft();
                 Map<String, String> grayMap = mapPair.getRight();
-                singleMap.forEach((homeUrl,data) ->{
-                    try {
-                        Map<String, Price> priceMap = ParserHomePage.parseHomePage(homeUrl, "");
-                        assert priceMap != null;
-                        priceMap.forEach((configUrl, homeData) ->{
-                            try {
-                                List<List<Object>> lists = ParserSpecificPage.parseSpecificPage(configUrl, "");
-                                assert lists != null;
-                                lists.forEach(list ->{
-                                    String s = "finally value:" + data + "," + homeData + "," + list;
-                                    System.out.println(s);
-                                    builder.append(data).append(",").append(homeData).append(",").append(list);
-                                });
 
-                            } catch (IOException e) {}
-                        });
-                    } catch (IOException e) {}
+//                singleMap.forEach((homeUrl,data) ->{
+//                    try {
+//                        Map<String, Price> priceMap = ParserHomePage.parseHomePage(homeUrl, "");
+//                        assert priceMap != null;
+//                        priceMap.forEach((configUrl, homeData) ->{
+//                            try {
+//                                List<List<Object>> lists = ParserSpecificPage.parseSpecificPage(configUrl, "");
+//                                assert lists != null;
+//                                lists.forEach(list ->{
+//                                    String s = "finally value:" + data + "," + homeData + "," + list;
+//                                    System.out.println(s);
+//                                    builder.append(data).append(",").append(homeData).append(",").append(list);
+//                                });
+//
+//                            } catch (IOException e) {}
+//                        });
+//                    } catch (IOException e) {}
+//                });
+                //解析灰色链接的数据
+                grayMap.forEach((homeUrl,data) ->{
+                    try {
+                        ParserHomePage.parseHomePage(homeUrl,"");
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                    String s = "finally value:" + data;
+                    System.out.println(homeUrl + "," + s);
                 });
             } catch (IOException e) {}
         });

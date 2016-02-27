@@ -12,6 +12,7 @@ public class StopSale {
     private String advicePrice; //指导价
     private String usedPrice;  //二手车价钱
     private String link;  //  参数配置链接
+    private String status = "停售";
 
     public String getCarName() {
         return carName;
@@ -61,6 +62,7 @@ public class StopSale {
                 .add("advicePrice", advicePrice)
                 .add("usedPrice", usedPrice)
                 .add("link", link)
+                .add("status",status)
                 .toString();
     }
 }

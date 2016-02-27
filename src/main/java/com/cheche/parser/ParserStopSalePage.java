@@ -2,6 +2,7 @@ package com.cheche.parser;
 
 
 import com.cheche.model.StopSale;
+import com.google.common.collect.Lists;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
@@ -26,15 +27,16 @@ public class ParserStopSalePage {
      * @param path 停售页面参数配置链接保存路径
      * @throws IOException
      */
-    public static void parseStopSaleData(String url,String path) throws IOException {
+    public static List<StopSale> parseStopSaleData(String url,String path) throws IOException {
         Document document = getDocument(url);
+        List<StopSale> lists = Lists.newArrayList();
         StopSale stopSale = new StopSale();
         //这部分用来获取参数配置
         Elements configElems = document.select(".models_nav");
         for (Element configElem : configElems) {
             String href = configElem.select("a").get(1).attr("href");
             String link = "http://www.autohome.com.cn/" + href;
-            writeStringtoFile(path,link + "\n",true);
+//            writeStringtoFile(path,link + "\n",true);
         }
         //这部分用来将数据组装成一个stopSale的model对象
         Elements carElems = document.select(".car_price");
@@ -44,26 +46,35 @@ public class ParserStopSalePage {
             String advicePrice = carElems.get(i).select("span > strong").get(0).text();
             String usedPrice = carElems.get(i).select("span > strong").get(1).text();
             String link =configElems.get(i).select("a").get(1).attr("href");
+            link = "http://www.autohome.com.cn/" + link;
             stopSale.setYear(year);
             stopSale.setAdvicePrice(advicePrice);
             stopSale.setCarName(carName);
             stopSale.setLink(link);
             stopSale.setUsedPrice(usedPrice);
+            lists.add(stopSale);
         }
+        return lists;
     }
 
     public static void main(String[] args) {
+//        try {
+//            List<String> stopSaleLinks = readLink("D:/tmp/stopsale.txt");
+//            stopSaleLinks.forEach(stopSaleLink -> {
+//                try {
+//                    parseStopSaleData(stopSaleLink,"D:/tmp/stopsaleconfig.txt");
+//                } catch (IOException e) {
+//                    logger.warn(e.getMessage());
+//                }
+//            });
+//        } catch (IOException e) {
+//            logger.warn(e.getMessage());
+//        }
         try {
-            List<String> stopSaleLinks = readLink("D:/tmp/stopsale.txt");
-            stopSaleLinks.forEach(stopSaleLink -> {
-                try {
-                    parseStopSaleData(stopSaleLink,"D:/tmp/stopsaleconfig.txt");
-                } catch (IOException e) {
-                    logger.warn(e.getMessage());
-                }
-            });
+            List<StopSale> stopSales = parseStopSaleData("http://www.autohome.com.cn/2888/sale.html", "");
+            System.out.println(stopSales);
         } catch (IOException e) {
-            logger.warn(e.getMessage());
+            e.printStackTrace();
         }
     }
 }
