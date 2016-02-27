@@ -4,12 +4,14 @@ import static com.cheche.common.Commons.*;
 
 import com.cheche.model.Price;
 import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 import org.jsoup.nodes.Document;
 import org.jsoup.select.Elements;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import java.io.IOException;
 import java.util.List;
+import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -30,26 +32,29 @@ public class ParserHomePage {
      *  用户评分
      * 同时提取出参数配置的链接
      * 还需要停售的数据
+     * http://www.autohome.com.cn/2097/
      * @param url
      * @throws IOException
      */
-    public static void parseHomePage(String url,String path) throws IOException {
+    public static Map<String,Price> parseHomePage(String url,String path) throws IOException {
         Document document = getDocument(url);
+        Map<String,Price> homeData = Maps.newLinkedHashMap();
         //处理车系首页需要的数据  转换为price的实体类
         List<String> oldList = getJsonp(url);
         Price price = homePageData(document,oldList);
         System.out.println(price);
         Elements liElems = document.select(".nav-item");
-        if(liElems.isEmpty()) return;
+        if(liElems.isEmpty()) return null;
         Elements aElem = liElems.get(1).select("a");
         if(!aElem.isEmpty()){
             String href = aElem.attr("href");
+            homeData.put(href,price);
             if(logger.isInfoEnabled()){
                 logger.info("href is:{}" + href);
             }
 //            writeStringtoFile(path,href + "\n",true);
         }
-
+        return homeData;
     }
 
     /**
@@ -62,12 +67,22 @@ public class ParserHomePage {
         Elements dtElems = document.select(".autoseries-info > dl > dt");
         Price price = new Price();
         String newPrice = dtElems.get(0).select("a").get(0).text();
-        String carType = dtElems.get(0).select("a").get(1).text();
+        String carType = null;
+        if(document.select(".koubei-score > a").size() > 1){
+            carType = dtElems.get(0).select("a").get(1).text();
+        }else{
+            carType = "暂无";
+        }
         String oldPrice = oldList.get(0) + "-" + oldList.get(1);
         String carSource = oldList.get(2);
         String engine = document.select(".autoseries-info > dl > dd").get(1).text();
         String specData = document.select(".autoseries-info > dl > dd").get(2).text();
-        String score = document.select(".koubei-score > a").get(1).text();
+        String score = null;
+        if(document.select(".koubei-score > a").size() > 1){
+            score = document.select(".koubei-score > a").get(1).text();
+        }else{
+            score = "暂无口碑";
+        }
         String carName = document.select(".subnav-title-name > a").get(0).text();
         String bigImg = document.select(".autoseries-pic-img1 > a > img").attr("src");
         String factImg = document.select(".autoseries-pic-img2").get(0).select("a > img").attr("src");
@@ -128,6 +143,12 @@ public class ParserHomePage {
             content = matcher.group(1);
         }
         content = filter(content);
+        if(content.contains("不存在车源信息")){
+            list.add("暂无");
+            list.add("暂无");
+            list.add("暂无");
+            return list;
+        }
         String minPrice = content.substring(content.indexOf("minPrice:")+9, content.indexOf(",maxPrice"));
         String maxPrice = content.substring(content.indexOf("maxPrice:")+9, content.indexOf(",url"));
         String count = content.substring(content.indexOf("count:")+6, content.indexOf("}"));
@@ -138,7 +159,7 @@ public class ParserHomePage {
     }
 
     private static String filter(String content) {
-        String cont = content.replaceAll("&", "").replaceAll("quot;","");
+        String cont = content.replaceAll("&", "").replaceAll("quot;","").replace("\"","");
         return cont;
     }
 

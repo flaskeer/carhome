@@ -1,7 +1,11 @@
 package com.cheche.fetcher;
 
+import com.cheche.model.Price;
+import com.cheche.parser.ParserHomePage;
+import com.cheche.parser.ParserSpecificPage;
 import com.cheche.util.HttpClientUtil;
 import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.jsoup.Jsoup;
@@ -11,9 +15,9 @@ import org.jsoup.select.Elements;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.File;
 import java.io.IOException;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Created by user on 2016/2/17.
@@ -54,9 +58,9 @@ public class FetcherLink {
      * @return
      * @throws IOException
      */
-    private static Object fetchSinglePageLink(String url) throws IOException {
-        List<String> singlePageLinks = Lists.newArrayList();
-        List<String> grayPageLinks = Lists.newArrayList();
+    private static Pair<Map<String, String>, Map<String, String>> fetchSinglePageLink(String url) throws IOException {
+        Map<String,String> singlePageMap = Maps.newLinkedHashMap();
+        Map<String,String> grayPageMap = Maps.newLinkedHashMap();
         StringBuilder builder = new StringBuilder();
         Document document = getDocument(url);
         Elements dlElems = document.select("dl");
@@ -70,22 +74,27 @@ public class FetcherLink {
                 Elements liElems = ulElem.select("li");
                 for (Element liElem : liElems) {
                     Elements aElems = liElem.select("h4 > a");
+                    if(aElems.text().isEmpty()){
+                        continue;
+                    }
                     if(aElems.hasClass("greylink")) {
                         String thirdBrand = aElems.text();
-                        builder.append(img).append(",").append(firstBrand).append(",")
-                                .append(secondBrand).append(",").append(thirdBrand).append(",").append(aElems.attr("href")).append("\n");
+                        grayPageMap.put(aElems.attr("href"),firstBrand + "," + img + "," + secondBrand + "," + thirdBrand + ",");
+//                        builder.append(img).append(",").append(firstBrand).append(",")
+//                                .append(secondBrand).append(",").append(thirdBrand).append(",").append(aElems.attr("href")).append("\n");
                     }else {
                         String thirdBrand = aElems.text();
-                        builder.append(img).append(",").append(firstBrand).append(",")
-                                .append(secondBrand).append(",").append(thirdBrand).append(",").append(aElems.attr("href")).append("\n");
+                        singlePageMap.put(aElems.attr("href"),firstBrand + "," + img + "," + secondBrand + "," + thirdBrand + ",");
+//                        builder.append(img).append(",").append(firstBrand).append(",")
+//                                .append(secondBrand).append(",").append(thirdBrand).append(",").append(aElems.attr("href")).append("\n");
                     }
                 }
 
             }
         }
 
-//        Pair<List<String>, List<String>> pair = Pair.of(singlePageLinks, grayPageLinks);
-        return builder.toString();
+        Pair<Map<String, String>, Map<String, String>> mapPair = Pair.of(singlePageMap, grayPageMap);
+        return mapPair;
     }
 
 
@@ -114,13 +123,46 @@ public class FetcherLink {
 //        });
 //    }
 
+    public static Object get() throws IOException{
+        List<String> pages = pages();
+        StringBuilder builder = new StringBuilder();
+        pages.forEach(pageUrl ->{
+            try {
+                Pair<Map<String, String>, Map<String, String>> mapPair = fetchSinglePageLink(pageUrl);
+                Map<String, String> singleMap = mapPair.getLeft();
+                Map<String, String> grayMap = mapPair.getRight();
+                singleMap.forEach((homeUrl,data) ->{
+                    try {
+                        Map<String, Price> priceMap = ParserHomePage.parseHomePage(homeUrl, "");
+                        assert priceMap != null;
+                        priceMap.forEach((configUrl, homeData) ->{
+                            try {
+                                List<List<Object>> lists = ParserSpecificPage.parseSpecificPage(configUrl, "");
+                                assert lists != null;
+                                lists.forEach(list ->{
+                                    String s = "finally value:" + data + "," + homeData + "," + list;
+                                    System.out.println(s);
+                                    builder.append(data).append(",").append(homeData).append(",").append(list);
+                                });
+
+                            } catch (IOException e) {}
+                        });
+                    } catch (IOException e) {}
+                });
+            } catch (IOException e) {}
+        });
+        return builder.toString();
+    }
+
 
     public static void main(String[] args) {
 //        getAndWriteLinks("");
         try {
 //            Document document = getDocument("http://www.autohome.com.cn/grade/carhtml/C.html");
 //            System.out.println(document);
-            Object o = fetchSinglePageLink("http://www.autohome.com.cn/grade/carhtml/A.html");
+//            Object o = fetchSinglePageLink("http://www.autohome.com.cn/grade/carhtml/A.html");
+//            System.out.println(o);
+            Object o = get();
             System.out.println(o);
         } catch (IOException e) {
             e.printStackTrace();

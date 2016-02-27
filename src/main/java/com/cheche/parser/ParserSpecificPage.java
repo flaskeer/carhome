@@ -23,7 +23,7 @@ public class ParserSpecificPage {
      * @return
      * @throws IOException
      */
-    public static Object parseSpecificPage(String url,String errorPath) throws IOException {
+    public static List<List<Object>> parseSpecificPage(String url,String errorPath) throws IOException {
         String content = null;
         try {
             content = getDocument(url).toString();
@@ -62,7 +62,7 @@ public class ParserSpecificPage {
             builder.append("\n");
         }
 //        writeStringtoFile("D:/tmp/carhome_stopsale_data.txt",builder.toString(),true);
-        return builder.toString();
+        return fields;
     }
 
 
