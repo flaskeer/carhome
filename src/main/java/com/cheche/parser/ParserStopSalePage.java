@@ -30,7 +30,6 @@ public class ParserStopSalePage {
     public static List<StopSale> parseStopSaleData(String url,String path) throws IOException {
         Document document = getDocument(url);
         List<StopSale> lists = Lists.newArrayList();
-        StopSale stopSale = new StopSale();
         //这部分用来获取参数配置
         Elements configElems = document.select(".models_nav");
         for (Element configElem : configElems) {
@@ -41,6 +40,7 @@ public class ParserStopSalePage {
         //这部分用来将数据组装成一个stopSale的model对象
         Elements carElems = document.select(".car_price");
         for (int i = 0; i < carElems.size(); i++) {
+            StopSale stopSale = new StopSale();
             String carName = document.select(".subnav-title-name > a").text();
             String year = carElems.get(i).select("span").get(0).text();
             String advicePrice = carElems.get(i).select("span > strong").get(0).text();

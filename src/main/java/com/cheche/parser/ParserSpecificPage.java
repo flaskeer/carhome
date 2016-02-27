@@ -28,7 +28,7 @@ public class ParserSpecificPage {
         try {
             content = getDocument(url).toString();
         }catch (Exception e){
-            writeStringtoFile(errorPath,url + "\n",true);
+//            writeStringtoFile(errorPath,url + "\n",true);
             return null;
         }
         if(content.contains("抱歉，暂无相关数据。") || content.contains("您访问的页面出错了")) {

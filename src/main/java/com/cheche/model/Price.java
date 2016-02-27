@@ -22,6 +22,7 @@ public class Price {
     private String videoImg; //视频图片
     private String engine; //发动机
     private String specData;  //具体的数据
+    private String status = "在售";  //销售状态
 
     public String getCarName() {
         return carName;
@@ -125,6 +126,7 @@ public class Price {
                 .add("videoImg", videoImg)
                 .add("engine", engine)
                 .add("specData", specData)
+                .add("status",status)
                 .toString();
     }
 }

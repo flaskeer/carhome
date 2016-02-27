@@ -1,6 +1,7 @@
 package com.cheche.fetcher;
 
 import com.cheche.model.Price;
+import com.cheche.model.StopSale;
 import com.cheche.parser.ParserHomePage;
 import com.cheche.parser.ParserSpecificPage;
 import com.cheche.util.HttpClientUtil;
@@ -131,7 +132,7 @@ public class FetcherLink {
                 Pair<Map<String, String>, Map<String, String>> mapPair = fetchSinglePageLink(pageUrl);
                 Map<String, String> singleMap = mapPair.getLeft();
                 Map<String, String> grayMap = mapPair.getRight();
-
+                //处理带有配置参数的页面
 //                singleMap.forEach((homeUrl,data) ->{
 //                    try {
 //                        Map<String, Price> priceMap = ParserHomePage.parseHomePage(homeUrl, "");
@@ -153,12 +154,28 @@ public class FetcherLink {
                 //解析灰色链接的数据
                 grayMap.forEach((homeUrl,data) ->{
                     try {
-                        ParserHomePage.parseHomePage(homeUrl,"");
+                        Map<StopSale, List<List<Object>>> map = ParserHomePage.parseGrayPage(homeUrl);
+                        if(map == null){
+                            String s = "finally value:(only data)" + data;
+                            System.out.println(s);
+                        }else{
+                            map.forEach((stopSale, lists) -> {
+                                if (lists == null){
+                                    String s = "finally value:(data and stopSale)" + data + "," + stopSale;
+                                    System.out.println(s);
+                                }else{
+                                    lists.forEach(list ->{
+                                        String s = "finally value:(all)" + data + "," + stopSale + "," + list;
+                                        System.out.println(s);
+                                    });
+                                }
+
+                            });
+                        }
+
                     } catch (IOException e) {
                         e.printStackTrace();
                     }
-                    String s = "finally value:" + data;
-                    System.out.println(homeUrl + "," + s);
                 });
             } catch (IOException e) {}
         });

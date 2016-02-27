@@ -11,6 +11,7 @@ import org.jsoup.select.Elements;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
@@ -58,11 +59,21 @@ public class ParserHomePage {
         return homeData;
     }
 
-    public static void parseGrayPage(String url) throws IOException {
+    public static Map<StopSale,List<List<Object>>> parseGrayPage(String url) throws IOException {
+        Map<StopSale,List<List<Object>>> map = Maps.newLinkedHashMap();
         String link = stopSaleLink(url, "");
+        if(link == null) return null;
         List<StopSale> stopSales = ParserStopSalePage.parseStopSaleData(link, "");
-
-
+        for (StopSale stopSale : stopSales) {
+            String configLink = stopSale.getLink();
+            List<List<Object>> lists = ParserSpecificPage.parseSpecificPage(configLink, "");
+            if (lists == null){
+                map.put(stopSale,null);
+                continue;
+            }
+            map.put(stopSale,lists);
+        }
+    return map;
     }
 
     /**
@@ -191,7 +202,9 @@ public class ParserHomePage {
 //            getJsonp("http://www.autohome.com.cn/3170/");
 //            Document document = getDocument("http://api.che168.com/auto/ForAutoCarPCInterval.ashx?callback=che168CallBack&_appid=cms&sid=3170&yid=0&pid=110000");
 //            System.out.println(document);
-            parseHomePage("http://www.autohome.com.cn/3343/#levelsource=000000000_0&pvareaid=101594","");
+//            parseHomePage("http://www.autohome.com.cn/3343/#levelsource=000000000_0&pvareaid=101594","");
+            Map<StopSale, List<List<Object>>> stopSaleListMap = parseGrayPage("http://www.autohome.com.cn/1021/#levelsource=000000000_0&pvareaid=101594");
+            System.out.println(stopSaleListMap);
         } catch (IOException e) {
             e.printStackTrace();
         }
