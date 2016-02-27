@@ -133,53 +133,76 @@ public class FetcherLink {
                 Map<String, String> singleMap = mapPair.getLeft();
                 Map<String, String> grayMap = mapPair.getRight();
                 //处理带有配置参数的页面
-//                singleMap.forEach((homeUrl,data) ->{
-//                    try {
-//                        Map<String, Price> priceMap = ParserHomePage.parseHomePage(homeUrl, "");
-//                        assert priceMap != null;
-//                        priceMap.forEach((configUrl, homeData) ->{
-//                            try {
-//                                List<List<Object>> lists = ParserSpecificPage.parseSpecificPage(configUrl, "");
-//                                assert lists != null;
-//                                lists.forEach(list ->{
-//                                    String s = "finally value:" + data + "," + homeData + "," + list;
-//                                    System.out.println(s);
-//                                    builder.append(data).append(",").append(homeData).append(",").append(list);
-//                                });
-//
-//                            } catch (IOException e) {}
-//                        });
-//                    } catch (IOException e) {}
-//                });
-                //解析灰色链接的数据
-                grayMap.forEach((homeUrl,data) ->{
+                singleMap.forEach((homeUrl,data) ->{
                     try {
-                        Map<StopSale, List<List<Object>>> map = ParserHomePage.parseGrayPage(homeUrl);
-                        if(map == null){
-                            String s = "finally value:(only data)" + data;
-                            System.out.println(s);
-                        }else{
-                            map.forEach((stopSale, lists) -> {
-                                if (lists == null){
-                                    String s = "finally value:(data and stopSale)" + data + "," + stopSale;
+                        Map<StopSale, List<List<Object>>> stopSaleListMap = ParserHomePage.parseGrayPage(homeUrl);
+//                        parseMap(stopSaleListMap,data);
+                        Map<String, Price> priceMap = ParserHomePage.parseHomePage(homeUrl, "");
+                        assert priceMap != null;
+                        priceMap.forEach((configUrl, homeData) ->{
+                            try {
+                                List<List<Object>> lists = ParserSpecificPage.parseSpecificPage(configUrl, "");
+                                assert lists != null;
+                                lists.forEach(list ->{
+                                    String s = "finally value:" + data + "," + homeData + "," + list;
                                     System.out.println(s);
-                                }else{
-                                    lists.forEach(list ->{
-                                        String s = "finally value:(all)" + data + "," + stopSale + "," + list;
-                                        System.out.println(s);
-                                    });
-                                }
+                                    builder.append(data).append(",").append(homeData).append(",").append(list);
+                                });
 
-                            });
-                        }
-
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
+                            } catch (IOException e) {}
+                        });
+                    } catch (IOException e) {}
                 });
+                //解析灰色链接的数据
+//                grayMap.forEach((homeUrl,data) ->{
+//                    try {
+//                        Map<StopSale, List<List<Object>>> map = ParserHomePage.parseGrayPage(homeUrl);
+////                        parseMap(map,data);
+////                        if(map == null){
+////                            String s = "finally value:(only data)" + data;
+////                            System.out.println(s);
+////                        }else{
+////                            map.forEach((stopSale, lists) -> {
+////                                if (lists == null){
+////                                    String s = "finally value:(data and stopSale)" + data + "," + stopSale;
+////                                    System.out.println(s);
+////                                }else{
+////                                    lists.forEach(list ->{
+////                                        String s = "finally value:(all)" + data + "," + stopSale + "," + list;
+////                                        System.out.println(s);
+////                                    });
+////                                }
+////
+////                            });
+////                        }
+//
+//
+//                    } catch (IOException e) {
+//                        e.printStackTrace();
+//                    }
+//                });
             } catch (IOException e) {}
         });
         return builder.toString();
+    }
+
+    private static void parseMap(Map<StopSale, List<List<Object>>> map,String data){
+        if(map == null){
+            String s = "finally value:(only data)" + data;
+            System.out.println(s);
+        }else{
+            map.forEach((stopSale, lists) -> {
+                if (lists == null){
+                    String s = "finally value:(data and stopSale)" + data + "," + stopSale;
+                    System.out.println(s);
+                }else{
+                    lists.forEach(list ->{
+                        String s = "finally value:(all)" + data + "," + stopSale + "," + list;
+                        System.out.println(s);
+                    });
+                }
+            });
+        }
     }
 
 
