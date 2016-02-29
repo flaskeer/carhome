@@ -112,21 +112,39 @@ public class Price {
         this.specData = specData;
     }
 
+//    @Override
+//    public String toString() {
+//        return MoreObjects.toStringHelper(this)
+//                .add("carName", carName)
+//                .add("newPrice", newPrice)
+//                .add("oldPrice", oldPrice)
+//                .add("carType", carType)
+//                .add("carSource", carSource)
+//                .add("score", score)
+//                .add("bigImg", bigImg)
+//                .add("factImg", factImg)
+//                .add("videoImg", videoImg)
+//                .add("engine", engine)
+//                .add("specData", specData)
+//                .add("status",status)
+//                .toString();
+//    }
+
     @Override
     public String toString() {
-        return MoreObjects.toStringHelper(this)
-                .add("carName", carName)
-                .add("newPrice", newPrice)
-                .add("oldPrice", oldPrice)
-                .add("carType", carType)
-                .add("carSource", carSource)
-                .add("score", score)
-                .add("bigImg", bigImg)
-                .add("factImg", factImg)
-                .add("videoImg", videoImg)
-                .add("engine", engine)
-                .add("specData", specData)
-                .add("status",status)
-                .toString();
+        final StringBuilder sb = new StringBuilder();
+        sb.append("\"").append(carName).append("\"").append(",");
+        sb.append("\"").append(newPrice).append("\"").append(",");
+        sb.append("\"").append(oldPrice).append("\"").append(",");
+        sb.append("\"").append(carType).append("\"").append(",");
+        sb.append("\"").append(carSource).append("\"").append(",");
+        sb.append("\"").append(score).append("\"").append(",");
+        sb.append("\"").append(bigImg).append("\"").append(",");
+        sb.append("\"").append(factImg).append("\"").append(",");
+        sb.append("\"").append(videoImg).append("\"").append(",");
+        sb.append("\"").append(engine).append("\"").append(",");
+        sb.append("\"").append(specData).append("\"").append(",");
+        sb.append("\"").append(status).append("\"");
+        return sb.toString();
     }
 }

@@ -44,7 +44,7 @@ public class ParserHomePage {
         //处理车系首页需要的数据  转换为price的实体类
         List<String> oldList = getJsonp(url);
         Price price = homePageData(document,oldList);
-        System.out.println(price);
+//        System.out.println(price);
         Elements liElems = document.select(".nav-item");
         if(liElems.isEmpty()) return null;
         Elements aElem = liElems.get(1).select("a");

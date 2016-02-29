@@ -45,7 +45,7 @@ public class ParserSpecificPage {
 //        String innerColor = html.regex("var innerColor=(.*?);",1).get();
         String[] ids = split(idList);
         List<String> nameList = parseStandardField(keyLink);
-        System.out.println("nameList size:" + nameList.size());
+//        System.out.println("nameList size:" + nameList.size());
         Table<String,String,String> configList = parseJson(config, "paramtypeitems", "paramitems","value",ids);
         Table<String,String,String> optionList = parseJson(option, "configtypeitems", "configitems", "value", ids);
 ////        List<Map<String, List<String>>> colorList = parseJsonForColor(color, ids);

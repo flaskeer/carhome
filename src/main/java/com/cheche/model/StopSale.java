@@ -1,6 +1,5 @@
 package com.cheche.model;
 
-import com.google.common.base.MoreObjects;
 
 /**
  * Created by user on 2016/2/18.
@@ -54,15 +53,29 @@ public class StopSale {
         this.link = link;
     }
 
+//    @Override
+//    public String toString() {
+//        return MoreObjects.toStringHelper(this)
+//                .add("carName", carName)
+//                .add("year", year)
+//                .add("advicePrice", advicePrice)
+//                .add("usedPrice", usedPrice)
+//                .add("link", link)
+//                .add("status",status)
+//                .toString();
+//    }
+
+
     @Override
     public String toString() {
-        return MoreObjects.toStringHelper(this)
-                .add("carName", carName)
-                .add("year", year)
-                .add("advicePrice", advicePrice)
-                .add("usedPrice", usedPrice)
-                .add("link", link)
-                .add("status",status)
-                .toString();
+        final StringBuilder sb = new StringBuilder();
+        sb.append("\"").append(carName).append("\"").append(",");
+        sb.append("\"").append(year).append("\"").append(",");
+        sb.append("\"").append(advicePrice).append("\"").append(",");
+        sb.append("\"").append(usedPrice).append("\"").append(",");
+        sb.append("\"").append(link).append("\"").append(",");
+        sb.append("\"").append(status).append("\"");
+        sb.append(",");
+        return sb.toString();
     }
 }

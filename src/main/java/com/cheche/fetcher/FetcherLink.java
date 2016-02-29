@@ -7,7 +7,6 @@ import com.cheche.parser.ParserSpecificPage;
 import com.cheche.util.HttpClientUtil;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
-import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -19,7 +18,8 @@ import org.slf4j.LoggerFactory;
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
-
+import java.util.stream.Collectors;
+import static com.cheche.common.Commons.writeStringtoFile;
 /**
  * Created by user on 2016/2/17.
  */
@@ -44,7 +44,10 @@ public class FetcherLink {
             String url = "http://www.autohome.com.cn/grade/carhtml/" + i + ".html";
             urls.add(url);
         }
-
+        urls.remove("http://www.autohome.com.cn/grade/carhtml/E.html");
+        urls.remove("http://www.autohome.com.cn/grade/carhtml/I.html");
+        urls.remove("http://www.autohome.com.cn/grade/carhtml/U.html");
+        urls.remove("http://www.autohome.com.cn/grade/carhtml/V.html");
         return urls;
     }
 
@@ -80,14 +83,10 @@ public class FetcherLink {
                     }
                     if(aElems.hasClass("greylink")) {
                         String thirdBrand = aElems.text();
-                        grayPageMap.put(aElems.attr("href"),firstBrand + "," + img + "," + secondBrand + "," + thirdBrand + ",");
-//                        builder.append(img).append(",").append(firstBrand).append(",")
-//                                .append(secondBrand).append(",").append(thirdBrand).append(",").append(aElems.attr("href")).append("\n");
+                        grayPageMap.put(aElems.attr("href"),"\"" + firstBrand + "\"" + "," + "\"" + img + "\"" +  "," + "\"" + secondBrand + "\"" + "," + "\"" +thirdBrand + "\"" + ",");
                     }else {
                         String thirdBrand = aElems.text();
-                        singlePageMap.put(aElems.attr("href"),firstBrand + "," + img + "," + secondBrand + "," + thirdBrand + ",");
-//                        builder.append(img).append(",").append(firstBrand).append(",")
-//                                .append(secondBrand).append(",").append(thirdBrand).append(",").append(aElems.attr("href")).append("\n");
+                        singlePageMap.put(aElems.attr("href"),"\"" + firstBrand + "\"" + "," + "\"" + img + "\"" +  "," + "\"" + secondBrand + "\"" + "," + "\"" +thirdBrand + "\"" + ",");
                     }
                 }
 
@@ -124,7 +123,14 @@ public class FetcherLink {
 //        });
 //    }
 
-    public static Object get() throws IOException{
+    /**
+     * 解析程序的入口   只要调用这个函数就可以获取全部数据
+     * @param salePath  写入在售车型数据
+     * @param stopSalePath 写入停售车型数据
+     * @return
+     * @throws IOException
+     */
+    public static Object get(String salePath,String stopSalePath) throws IOException{
         List<String> pages = pages();
         StringBuilder builder = new StringBuilder();
         pages.forEach(pageUrl ->{
@@ -136,7 +142,7 @@ public class FetcherLink {
                 singleMap.forEach((homeUrl,data) ->{
                     try {
                         Map<StopSale, List<List<Object>>> stopSaleListMap = ParserHomePage.parseGrayPage(homeUrl);
-//                        parseMap(stopSaleListMap,data);
+                        parseMap(stopSaleListMap,data,stopSalePath);
                         Map<String, Price> priceMap = ParserHomePage.parseHomePage(homeUrl, "");
                         assert priceMap != null;
                         priceMap.forEach((configUrl, homeData) ->{
@@ -144,9 +150,17 @@ public class FetcherLink {
                                 List<List<Object>> lists = ParserSpecificPage.parseSpecificPage(configUrl, "");
                                 assert lists != null;
                                 lists.forEach(list ->{
-                                    String s = "finally value:" + data + "," + homeData + "," + list;
+                                    list = list.stream().map(obj -> "\"" + obj + "\"" + ",").collect(Collectors.toList());
+                                    String lst = "";
+                                    for (Object o : list) {
+                                        lst += o;
+                                    }
+                                    String s = "finally value:" + data + "," + homeData + "," + lst;
                                     System.out.println(s);
-                                    builder.append(data).append(",").append(homeData).append(",").append(list);
+                                    String write = data + "," + homeData + "," + lst + "\n";
+                                    try {
+                                        writeStringtoFile(salePath,write,true);
+                                    } catch (IOException e) {}
                                 });
 
                             } catch (IOException e) {}
@@ -154,51 +168,48 @@ public class FetcherLink {
                     } catch (IOException e) {}
                 });
                 //解析灰色链接的数据
-//                grayMap.forEach((homeUrl,data) ->{
-//                    try {
-//                        Map<StopSale, List<List<Object>>> map = ParserHomePage.parseGrayPage(homeUrl);
-////                        parseMap(map,data);
-////                        if(map == null){
-////                            String s = "finally value:(only data)" + data;
-////                            System.out.println(s);
-////                        }else{
-////                            map.forEach((stopSale, lists) -> {
-////                                if (lists == null){
-////                                    String s = "finally value:(data and stopSale)" + data + "," + stopSale;
-////                                    System.out.println(s);
-////                                }else{
-////                                    lists.forEach(list ->{
-////                                        String s = "finally value:(all)" + data + "," + stopSale + "," + list;
-////                                        System.out.println(s);
-////                                    });
-////                                }
-////
-////                            });
-////                        }
-//
-//
-//                    } catch (IOException e) {
-//                        e.printStackTrace();
-//                    }
-//                });
+                grayMap.forEach((homeUrl,data) ->{
+                    try {
+                        Map<StopSale, List<List<Object>>> map = ParserHomePage.parseGrayPage(homeUrl);
+                        parseMap(map,data,stopSalePath);
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                });
             } catch (IOException e) {}
         });
         return builder.toString();
     }
 
-    private static void parseMap(Map<StopSale, List<List<Object>>> map,String data){
+    private static void parseMap(Map<StopSale, List<List<Object>>> map,String data,String stopSalePath) throws IOException {
         if(map == null){
             String s = "finally value:(only data)" + data;
             System.out.println(s);
+            String write = data + "\n";
+            writeStringtoFile(stopSalePath,write,true);
         }else{
             map.forEach((stopSale, lists) -> {
                 if (lists == null){
                     String s = "finally value:(data and stopSale)" + data + "," + stopSale;
                     System.out.println(s);
+                    String write = data + "," + stopSale + "\n";
+                    try {
+                        writeStringtoFile(stopSalePath,write,true);
+                    } catch (IOException e) {}
+
                 }else{
                     lists.forEach(list ->{
-                        String s = "finally value:(all)" + data + "," + stopSale + "," + list;
+                        list = list.stream().map(obj -> "\"" + obj + "\"" + ",").collect(Collectors.toList());
+                        String lst = "";
+                        for (Object o : list) {
+                            lst += o;
+                        }
+                        String s = "finally value:(all)" + data + "," + stopSale + "," + lst;
                         System.out.println(s);
+                        String write = data + "," + stopSale + "," + lst + "\n";
+                        try {
+                            writeStringtoFile(stopSalePath,write,true);
+                        } catch (IOException e) {}
                     });
                 }
             });
@@ -213,8 +224,7 @@ public class FetcherLink {
 //            System.out.println(document);
 //            Object o = fetchSinglePageLink("http://www.autohome.com.cn/grade/carhtml/A.html");
 //            System.out.println(o);
-            Object o = get();
-            System.out.println(o);
+           FetcherLink.get("D:/tmp/autohome_sale_data.txt","D:/tmp/autohome__stopsale_data.txt");
         } catch (IOException e) {
             e.printStackTrace();
         }
