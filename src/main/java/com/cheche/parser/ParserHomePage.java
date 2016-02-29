@@ -13,6 +13,7 @@ import org.slf4j.LoggerFactory;
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -37,7 +38,7 @@ public class ParserHomePage {
      * @param url
      * @throws IOException
      */
-    public static Map<String,Price> parseHomePage(String url,String path) throws IOException {
+    public static Optional<Map<String, Price>> parseHomePage(String url,String path) throws IOException {
         Document document = getDocument(url);
         Map<String,Price> homeData = Maps.newLinkedHashMap();
         //处理车系首页需要的数据  转换为price的实体类
@@ -56,7 +57,8 @@ public class ParserHomePage {
             }
 //            writeStringtoFile(path,href + "\n",true);
         }
-        return homeData;
+        Optional<Map<String, Price>> optHomeData = Optional.of(homeData);
+        return optHomeData;
     }
 
     public static Map<StopSale,List<List<Object>>> parseGrayPage(String url) throws IOException {

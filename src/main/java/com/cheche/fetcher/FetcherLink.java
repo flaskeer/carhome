@@ -18,6 +18,7 @@ import org.slf4j.LoggerFactory;
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import static com.cheche.common.Commons.writeStringtoFile;
 /**
@@ -65,7 +66,6 @@ public class FetcherLink {
     private static Pair<Map<String, String>, Map<String, String>> fetchSinglePageLink(String url) throws IOException {
         Map<String,String> singlePageMap = Maps.newLinkedHashMap();
         Map<String,String> grayPageMap = Maps.newLinkedHashMap();
-        StringBuilder builder = new StringBuilder();
         Document document = getDocument(url);
         Elements dlElems = document.select("dl");
         for (int i = 0; i < dlElems.size(); i++) {
@@ -130,9 +130,8 @@ public class FetcherLink {
      * @return
      * @throws IOException
      */
-    public static Object get(String salePath,String stopSalePath,String errorPath) throws IOException{
+    public static void get(String salePath,String stopSalePath,String errorPath) throws IOException{
         List<String> pages = pages();
-        StringBuilder builder = new StringBuilder();
         pages.forEach(pageUrl ->{
             try {
                 Pair<Map<String, String>, Map<String, String>> mapPair = fetchSinglePageLink(pageUrl);
@@ -143,28 +142,30 @@ public class FetcherLink {
                     try {
                         Map<StopSale, List<List<Object>>> stopSaleListMap = ParserHomePage.parseGrayPage(homeUrl);
                         parseMap(stopSaleListMap,data,stopSalePath);
-                        Map<String, Price> priceMap = ParserHomePage.parseHomePage(homeUrl, "");
-                        assert priceMap != null;
-                        priceMap.forEach((configUrl, homeData) ->{
-                            try {
-                                List<List<Object>> lists = ParserSpecificPage.parseSpecificPage(configUrl, errorPath);
-                                assert lists != null;
-                                lists.forEach(list ->{
-                                    list = list.stream().map(obj -> "\"" + obj + "\"" + ",").collect(Collectors.toList());
-                                    String lst = "";
-                                    for (Object o : list) {
-                                        lst += o;
-                                    }
-                                    String s = "finally value:" + data + "," + homeData + "," + lst;
-                                    System.out.println(s);
-                                    String write = data + "," + homeData + "," + lst + "\n";
-                                    try {
-                                        writeStringtoFile(salePath,write,true);
-                                    } catch (IOException e) {}
-                                });
+                        Optional<Map<String, Price>> priceMap = ParserHomePage.parseHomePage(homeUrl, "");
+                        if(priceMap.isPresent()){
+                            priceMap.get().forEach((configUrl, homeData) ->{
+                                try {
+                                    List<List<Object>> lists = ParserSpecificPage.parseSpecificPage(configUrl, errorPath);
+                                    assert lists != null;
+                                    lists.forEach(list ->{
+                                        list = list.stream().map(obj -> "\"" + obj + "\"" + ",").collect(Collectors.toList());
+                                        String lst = "";
+                                        for (Object o : list) {
+                                            lst += o;
+                                        }
+                                        String s = "finally value:" + data + "," + homeData + "," + lst;
+                                        System.out.println(s);
+                                        String write = data + "," + homeData + "," + lst + "\n";
+                                        try {
+                                            writeStringtoFile(salePath,write,true);
+                                        } catch (IOException e) {}
+                                    });
 
-                            } catch (IOException e) {}
-                        });
+                                } catch (IOException e) {}
+                            });
+                        }
+
                     } catch (IOException e) {}
                 });
                 //解析灰色链接的数据
@@ -176,7 +177,6 @@ public class FetcherLink {
                 });
             } catch (IOException e) {}
         });
-        return builder.toString();
     }
 
     private static void parseMap(Map<StopSale, List<List<Object>>> map,String data,String stopSalePath) throws IOException {
