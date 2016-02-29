@@ -1,5 +1,6 @@
 package com.cheche.parser;
 
+import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Table;
 import org.slf4j.Logger;
@@ -24,45 +25,42 @@ public class ParserSpecificPage {
      * @throws IOException
      */
     public static List<List<Object>> parseSpecificPage(String url,String errorPath) throws IOException {
+        System.out.println("正在解析的url:" + url);
         String content = null;
         try {
             content = getDocument(url).toString();
-        }catch (Exception e){
+        } catch (Exception e) {
 //            writeStringtoFile(errorPath,url + "\n",true);
             return null;
         }
-        if(content.contains("抱歉，暂无相关数据。") || content.contains("您访问的页面出错了")) {
+        if (content.contains("抱歉，暂无相关数据。") || content.contains("您访问的页面出错了")) {
             return null;
         }
-        StringBuilder builder = new StringBuilder();
         Html html = Html.create(content);
         //取出id 解析其中的js，非贪婪匹配
-        String idList = html.regex("specIDs =\\[(.*?)\\];",1).get();
-        String keyLink = html.regex("keyLink = (.*?);",1).get();
-        String config = html.regex("var config = (.*?);",1).get();
-        String option = html.regex("var option = (.*)var bag",1).get().replace(";","");
+        try {
+            String idList = html.regex("specIDs =\\[(.*?)\\];", 1).get();
+            String keyLink = html.regex("keyLink = (.*?);", 1).get();
+            String config = html.regex("var config = (.*?);", 1).get();
+            String option = html.regex("var option = (.*)var bag", 1).get().replace(";", "");
+
+            Preconditions.checkNotNull(keyLink, "keyLink can not be null");
+            Preconditions.checkNotNull(config, "config can not be null");
+            Preconditions.checkNotNull(option, "option can not be null");
 //        String color = html.regex("var color = (.*?);",1).get();
 //        String innerColor = html.regex("var innerColor=(.*?);",1).get();
-        String[] ids = split(idList);
-        List<String> nameList = parseStandardField(keyLink);
-//        System.out.println("nameList size:" + nameList.size());
-        Table<String,String,String> configList = parseJson(config, "paramtypeitems", "paramitems","value",ids);
-        Table<String,String,String> optionList = parseJson(option, "configtypeitems", "configitems", "value", ids);
+            String[] ids = split(idList);
+            List<String> nameList = parseStandardField(keyLink);
+            Table<String, String, String> configList = parseJson(config, "paramtypeitems", "paramitems", "value", ids);
+            Table<String, String, String> optionList = parseJson(option, "configtypeitems", "configitems", "value", ids);
 ////        List<Map<String, List<String>>> colorList = parseJsonForColor(color, ids);
 ////        List<Map<String, List<String>>> innerColorList = parseJsonForColor(innerColor, ids);
-        List<List<Object>> fields = parseListNoColor(ids,configList, optionList,nameList);
-        for (List<Object> field : fields) {
-            for (Object o : field) {
-                if(o == null){
-                    builder.append("\"").append("\"").append(",");
-                }else{
-                    builder.append("\"").append(o).append("\"").append(",");
-                }
-            }
-            builder.append("\n");
+            List<List<Object>> fields = parseListNoColor(ids, configList, optionList, nameList);
+            return fields;
+        }catch (Exception e){
+            writeStringtoFile(errorPath,url + "\n",true);
+            return null;
         }
-//        writeStringtoFile("D:/tmp/carhome_stopsale_data.txt",builder.toString(),true);
-        return fields;
     }
 
 

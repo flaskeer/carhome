@@ -83,10 +83,10 @@ public class FetcherLink {
                     }
                     if(aElems.hasClass("greylink")) {
                         String thirdBrand = aElems.text();
-                        grayPageMap.put(aElems.attr("href"),"\"" + firstBrand + "\"" + "," + "\"" + img + "\"" +  "," + "\"" + secondBrand + "\"" + "," + "\"" +thirdBrand + "\"" + ",");
+                        grayPageMap.put(aElems.attr("href"),"\"" + firstBrand + "\"" + "," + "\"" + img + "\"" +  "," + "\"" + secondBrand + "\"" + "," + "\"" +thirdBrand + "\"");
                     }else {
                         String thirdBrand = aElems.text();
-                        singlePageMap.put(aElems.attr("href"),"\"" + firstBrand + "\"" + "," + "\"" + img + "\"" +  "," + "\"" + secondBrand + "\"" + "," + "\"" +thirdBrand + "\"" + ",");
+                        singlePageMap.put(aElems.attr("href"),"\"" + firstBrand + "\"" + "," + "\"" + img + "\"" +  "," + "\"" + secondBrand + "\"" + "," + "\"" +thirdBrand + "\"");
                     }
                 }
 
@@ -130,7 +130,7 @@ public class FetcherLink {
      * @return
      * @throws IOException
      */
-    public static Object get(String salePath,String stopSalePath) throws IOException{
+    public static Object get(String salePath,String stopSalePath,String errorPath) throws IOException{
         List<String> pages = pages();
         StringBuilder builder = new StringBuilder();
         pages.forEach(pageUrl ->{
@@ -147,7 +147,7 @@ public class FetcherLink {
                         assert priceMap != null;
                         priceMap.forEach((configUrl, homeData) ->{
                             try {
-                                List<List<Object>> lists = ParserSpecificPage.parseSpecificPage(configUrl, "");
+                                List<List<Object>> lists = ParserSpecificPage.parseSpecificPage(configUrl, errorPath);
                                 assert lists != null;
                                 lists.forEach(list ->{
                                     list = list.stream().map(obj -> "\"" + obj + "\"" + ",").collect(Collectors.toList());
@@ -172,9 +172,7 @@ public class FetcherLink {
                     try {
                         Map<StopSale, List<List<Object>>> map = ParserHomePage.parseGrayPage(homeUrl);
                         parseMap(map,data,stopSalePath);
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
+                    } catch (IOException e) {}
                 });
             } catch (IOException e) {}
         });
@@ -224,9 +222,7 @@ public class FetcherLink {
 //            System.out.println(document);
 //            Object o = fetchSinglePageLink("http://www.autohome.com.cn/grade/carhtml/A.html");
 //            System.out.println(o);
-           FetcherLink.get("D:/tmp/autohome_sale_data.txt","D:/tmp/autohome__stopsale_data.txt");
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+           FetcherLink.get("D:/tmp/autohome_sale_data.txt","D:/tmp/autohome__stopsale_data.txt","D:/tmp/autohome__error_url_data.txt");
+        } catch (IOException e) {}
     }
 }

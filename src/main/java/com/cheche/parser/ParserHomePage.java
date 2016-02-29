@@ -11,7 +11,6 @@ import org.jsoup.select.Elements;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
@@ -43,6 +42,7 @@ public class ParserHomePage {
         Map<String,Price> homeData = Maps.newLinkedHashMap();
         //处理车系首页需要的数据  转换为price的实体类
         List<String> oldList = getJsonp(url);
+        if(oldList == null) return null;
         Price price = homePageData(document,oldList);
 //        System.out.println(price);
         Elements liElems = document.select(".nav-item");
@@ -127,14 +127,20 @@ public class ParserHomePage {
      * @throws IOException
      */
     private static String stopSaleLink(String url,String path) throws IOException {
-        Document document = getDocument(url);
-        String href = document.select(".other-car > .link-sale").attr("href");
-        if(href.isEmpty()) return null;
-        String link = "http://www.autohome.com.cn" + href;
-        if(logger.isDebugEnabled()){
-            logger.debug("stop sale link is:{}",link);
+        try {
+
+            Document document = getDocument(url);
+            String href = document.select(".other-car > .link-sale").attr("href");
+            if (href.isEmpty()) return null;
+            String link = "http://www.autohome.com.cn" + href;
+            if (logger.isDebugEnabled()) {
+                logger.debug("stop sale link is:{}", link);
+            }
+            return link;
+        } catch (Exception e){
+            writeStringtoFile(path,url + "\n",true);
+            return null;
         }
-        return link;
     }
 
     private static List<String> getJsonp(String url) throws IOException {
@@ -145,6 +151,7 @@ public class ParserHomePage {
         }
         String jsonp = "http://api.che168.com/auto/ForAutoCarPCInterval.ashx?callback=che168CallBack&_appid=cms&sid=" + sid + "&yid=0&pid=110000";
         Document document = getDocument(jsonp);
+        if(document == null) return null;
         return parseJsonp(document);
     }
 
