@@ -1,22 +1,30 @@
 package com.cheche.util;
 
+import com.google.common.collect.Lists;
 import org.apache.commons.io.IOUtils;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpHost;
+import org.apache.http.NameValuePair;
 import org.apache.http.client.config.RequestConfig;
+import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
+import org.apache.http.client.methods.HttpPost;
 import org.apache.http.conn.routing.HttpRoute;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.impl.conn.PoolingHttpClientConnectionManager;
+import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.util.EntityUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.net.SocketTimeoutException;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Created by user on 2016/2/17.
@@ -106,6 +114,44 @@ public class HttpClientUtil {
     public static String sendHttpGet(String url,String charset){
         HttpGet httpGet = new HttpGet(url);
         return sendGet(httpGet,charset);
+    }
+
+    /**
+     * 发送post请求  提交表单数据
+     * @param url
+     * @param maps
+     * @return
+     * @throws UnsupportedEncodingException
+     */
+    public static String sendHttpPost(String url, Map<String,String> maps) throws UnsupportedEncodingException {
+        HttpPost httpPost = new HttpPost(url);
+        List<NameValuePair> nameValuePairs = Lists.newArrayList();
+        maps.forEach((k,v) -> nameValuePairs.add(new BasicNameValuePair(k,v)));
+        httpPost.setEntity(new UrlEncodedFormEntity(nameValuePairs,"utf-8"));
+        return sendHttpPost(httpPost);
+    }
+
+    private static String sendHttpPost(HttpPost httpPost) {
+        CloseableHttpResponse response = null;
+        HttpEntity entity = null;
+        String responseContent = null;
+        try{
+            httpPost.setConfig(requestConfig);
+            response = httpClient.execute(httpPost);
+            entity = response.getEntity();
+            responseContent = EntityUtils.toString(entity,"UTF-8");
+        } catch (Exception e){
+            e.printStackTrace();
+        }finally{
+            try {
+                if (response != null) {
+                    response.close();
+                }
+            } catch (IOException e){
+                e.printStackTrace();
+            }
+        }
+        return responseContent;
     }
 
     public static void main(String[] args) {
