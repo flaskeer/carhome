@@ -12,6 +12,15 @@ public class StopSale {
     private String usedPrice;  //二手车价钱
     private String link;  //  参数配置链接
     private String status = "停售";
+    private String id;
+
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
+    }
 
     public String getCarName() {
         return carName;
@@ -53,17 +62,6 @@ public class StopSale {
         this.link = link;
     }
 
-//    @Override
-//    public String toString() {
-//        return MoreObjects.toStringHelper(this)
-//                .add("carName", carName)
-//                .add("year", year)
-//                .add("advicePrice", advicePrice)
-//                .add("usedPrice", usedPrice)
-//                .add("link", link)
-//                .add("status",status)
-//                .toString();
-//    }
 
 
     @Override
@@ -74,6 +72,7 @@ public class StopSale {
         sb.append("\"").append(advicePrice).append("\"").append(",");
         sb.append("\"").append(usedPrice).append("\"").append(",");
         sb.append("\"").append(link).append("\"").append(",");
+        sb.append("\"").append(id).append("\"").append(",");
         sb.append("\"").append(status).append("\"");
         sb.append(",");
         return sb.toString();

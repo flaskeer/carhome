@@ -45,7 +45,6 @@ public class ParserHomePage {
         List<String> oldList = getJsonp(url);
         if(oldList == null) return null;
         Price price = homePageData(document,oldList);
-//        System.out.println(price);
         Elements liElems = document.select(".nav-item");
         if(liElems.isEmpty()) return null;
         Elements aElem = liElems.get(1).select("a");
@@ -55,7 +54,6 @@ public class ParserHomePage {
             if(logger.isInfoEnabled()){
                 logger.info("href is:{}" + href);
             }
-//            writeStringtoFile(path,href + "\n",true);
         }
         Optional<Map<String, Price>> optHomeData = Optional.of(homeData);
         return optHomeData;
@@ -66,6 +64,7 @@ public class ParserHomePage {
         String link = stopSaleLink(url, "");
         if(link == null) return null;
         List<StopSale> stopSales = ParserStopSalePage.parseStopSaleData(link, "");
+        if(stopSales == null) return null;
         for (StopSale stopSale : stopSales) {
             String configLink = stopSale.getLink();
             List<List<Object>> lists = ParserSpecificPage.parseSpecificPage(configLink, "");
@@ -96,6 +95,7 @@ public class ParserHomePage {
         }
         String oldPrice = oldList.get(0) + "-" + oldList.get(1);
         String carSource = oldList.get(2);
+        String SId = oldList.get(3);
         String engine = document.select(".autoseries-info > dl > dd").get(1).text();
         String specData = document.select(".autoseries-info > dl > dd").get(2).text();
         String score = null;
@@ -119,6 +119,7 @@ public class ParserHomePage {
         price.setVideoImg(videoImg);
         price.setEngine(engine);
         price.setSpecData(specData);
+        price.setSId(SId);
         return price;
     }
 
@@ -157,7 +158,7 @@ public class ParserHomePage {
             document = getDocument(jsonp);
         } catch (Exception e) {
             if(e instanceof IllegalArgumentException){
-                writeStringtoFile("error_url",url,true);
+                writeStringtoFile("error_url.txt",url,true);
             }else{
                 throw e;
             }
@@ -173,7 +174,7 @@ public class ParserHomePage {
      * @return
      */
     private static List<String> parseJsonp(Document document) {
-        List<String> list = Lists.newArrayListWithCapacity(3);
+        List<String> list = Lists.newArrayListWithCapacity(4);
         String content = document.html();
         Matcher matcher = patternContent.matcher(content);
         if(matcher.find()){
@@ -184,14 +185,17 @@ public class ParserHomePage {
             list.add("暂无");
             list.add("暂无");
             list.add("暂无");
+            list.add("暂无");
             return list;
         }
+        String SId = content.substring(content.indexOf("SId:")+4, content.indexOf(",YId"));
         String minPrice = content.substring(content.indexOf("minPrice:")+9, content.indexOf(",maxPrice"));
         String maxPrice = content.substring(content.indexOf("maxPrice:")+9, content.indexOf(",url"));
         String count = content.substring(content.indexOf("count:")+6, content.indexOf("}"));
         list.add(minPrice);
         list.add(maxPrice);
         list.add(count);
+        list.add(SId);
         return list;
     }
 
@@ -200,32 +204,5 @@ public class ParserHomePage {
         return cont;
     }
 
-
-    public static void main(String[] args) {
-//        try {
-//            List<String> links = readLink("D:/tmp/carhomelink1.txt");
-//            links.forEach(link ->{
-//                try {
-////                    parseHomePage(link,"D:/tmp/config.txt");
-//                    stopSaleLink(link,"D:/tmp/stopsale.txt");
-//                } catch (IOException e) {
-//                    logger.warn(e.getMessage());
-//                }
-//            });
-//        } catch (IOException e) {
-//            logger.warn(e.getMessage());
-//        }
-        //单个网页测试
-        try {
-//            getJsonp("http://www.autohome.com.cn/3170/");
-//            Document document = getDocument("http://api.che168.com/auto/ForAutoCarPCInterval.ashx?callback=che168CallBack&_appid=cms&sid=3170&yid=0&pid=110000");
-//            System.out.println(document);
-//            parseHomePage("http://www.autohome.com.cn/3343/#levelsource=000000000_0&pvareaid=101594","");
-            Map<StopSale, List<List<Object>>> stopSaleListMap = parseGrayPage("http://www.autohome.com.cn/1021/#levelsource=000000000_0&pvareaid=101594");
-            System.out.println(stopSaleListMap);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
 
 }

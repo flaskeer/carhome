@@ -7,7 +7,6 @@ import com.cheche.parser.ParserSpecificPage;
 import com.cheche.util.HttpClientUtil;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
-import org.apache.commons.lang3.tuple.Pair;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -19,14 +18,18 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import static com.cheche.common.Commons.writeStringtoFile;
 /**
  * Created by user on 2016/2/17.
  */
-public class FetcherLink {
+public class FetcherAutohomeData {
 
-    public static final Logger logger = LoggerFactory.getLogger(FetcherLink.class);
+    public static final Logger logger = LoggerFactory.getLogger(FetcherAutohomeData.class);
+
+    public static final Pattern pattern = Pattern.compile("(\\d+)");
 
     private static Document getDocument(String url) throws IOException {
         String content = HttpClientUtil.sendHttpsGet(url);
@@ -63,14 +66,21 @@ public class FetcherLink {
      * @return
      * @throws IOException
      */
-    private static Pair<Map<String, String>, Map<String, String>> fetchSinglePageLink(String url) throws IOException {
+    private static List<Map<String, String>> fetchSinglePageLink(String url) throws IOException {
         Map<String,String> singlePageMap = Maps.newLinkedHashMap();
         Map<String,String> grayPageMap = Maps.newLinkedHashMap();
+        List<Map<String, String>> lists = Lists.newArrayListWithCapacity(2);
         Document document = getDocument(url);
         Elements dlElems = document.select("dl");
         for (int i = 0; i < dlElems.size(); i++) {
             String img = dlElems.get(i).select("dt > a > img").attr("src");
             String firstBrand = dlElems.get(i).select("dt > div > a").text();
+            String href = dlElems.get(i).select("dt > div > a").attr("href");
+            String firstBrandId = null;
+            Matcher matcher = pattern.matcher(href);
+            if(matcher.find()){
+                firstBrandId = matcher.group(1);
+            }
             Elements divElems = dlElems.get(i).select("dd > div.h3-tit");
             for (int j = 0; j < divElems.size(); j++) {
                 String secondBrand = divElems.get(j).text();
@@ -83,45 +93,24 @@ public class FetcherLink {
                     }
                     if(aElems.hasClass("greylink")) {
                         String thirdBrand = aElems.text();
-                        grayPageMap.put(aElems.attr("href"),"\"" + firstBrand + "\"" + "," + "\"" + img + "\"" +  "," + "\"" + secondBrand + "\"" + "," + "\"" +thirdBrand + "\"");
+
+                        grayPageMap.put(aElems.attr("href").replace("#levelsource=000000000_0&pvareaid=101594",""),"\"" + firstBrand + "\"" + "," + "\"" + firstBrandId + "\"" + "," + "\"" + img + "\"" +  "," + "\"" + secondBrand + "\"" + "," + "\"" +thirdBrand + "\"");
                     }else {
                         String thirdBrand = aElems.text();
-                        singlePageMap.put(aElems.attr("href"),"\"" + firstBrand + "\"" + "," + "\"" + img + "\"" +  "," + "\"" + secondBrand + "\"" + "," + "\"" +thirdBrand + "\"");
+                        singlePageMap.put(aElems.attr("href").replace("#levelsource=000000000_0&pvareaid=101594",""),"\"" + firstBrand + "\"" + ","  + "\"" + firstBrandId + "\"" + "," + "\"" + img + "\"" +  "," + "\"" + secondBrand + "\"" + "," + "\"" +thirdBrand + "\"");
                     }
                 }
 
             }
         }
 
-        Pair<Map<String, String>, Map<String, String>> mapPair = Pair.of(singlePageMap, grayPageMap);
-        return mapPair;
+        lists.add(singlePageMap);
+        lists.add(grayPageMap);
+        return lists;
     }
 
 
 
-    /**
-     * 用来将所有车型写入文件
-     */
-//    public static void getAndWriteLinks(String filePath){
-//        List<String> pages = pages();
-//        pages.forEach(pageUrl ->{
-//            try {
-//                List<String> singlePageLinks = fetchSinglePageLink(pageUrl);
-//                singlePageLinks.forEach(link ->{
-//                    if(logger.isInfoEnabled()){
-//                        logger.info("link is:{}",link);
-//                    }
-//                    try {
-//                        FileUtils.writeStringToFile(new File(filePath),link + "\n",true);
-//                    } catch (IOException e) {
-//                        e.printStackTrace();
-//                    }
-//                });
-//            } catch (IOException e) {
-//                e.printStackTrace();
-//            }
-//        });
-//    }
 
     /**
      * 解析程序的入口   只要调用这个函数就可以获取全部数据
@@ -130,53 +119,61 @@ public class FetcherLink {
      * @return
      * @throws IOException
      */
-    public static void get(String salePath,String stopSalePath,String errorPath) throws IOException{
+    public static void get(String salePath,String stopSalePath,String errorPath){
         List<String> pages = pages();
-        pages.forEach(pageUrl ->{
-            try {
-                Pair<Map<String, String>, Map<String, String>> mapPair = fetchSinglePageLink(pageUrl);
-                Map<String, String> singleMap = mapPair.getLeft();
-                Map<String, String> grayMap = mapPair.getRight();
-                //处理带有配置参数的页面
-                singleMap.forEach((homeUrl,data) ->{
-                    try {
-                        Map<StopSale, List<List<Object>>> stopSaleListMap = ParserHomePage.parseGrayPage(homeUrl);
-                        parseMap(stopSaleListMap,data,stopSalePath);
-                        Optional<Map<String, Price>> priceMap = ParserHomePage.parseHomePage(homeUrl, "");
-                        if(priceMap.isPresent()){
-                            priceMap.get().forEach((configUrl, homeData) ->{
-                                try {
-                                    List<List<Object>> lists = ParserSpecificPage.parseSpecificPage(configUrl, errorPath);
-                                    if(lists != null){
-                                        lists.forEach(list ->{
-                                            list = list.stream().map(obj -> "\"" + obj + "\"" + ",").collect(Collectors.toList());
-                                            String lst = "";
-                                            for (Object o : list) {
-                                                lst += o;
-                                            }
-                                            String s = "finally value:" + data + "," + homeData + "," + lst;
-                                            System.out.println(s);
-                                            String write = data + "," + homeData + "," + lst + "\n";
-                                            try {
-                                                writeStringtoFile(salePath,write,true);
-                                            } catch (IOException e) {}
-                                        });
+            pages.parallelStream().parallel().forEach(pageUrl -> {
+                try {
+                    List<Map<String, String>> mapPair = fetchSinglePageLink(pageUrl);
+                    Map<String, String> singleMap = mapPair.get(0);
+                    Map<String, String> grayMap = mapPair.get(1);
+                    //处理带有配置参数的页面
+                    singleMap.forEach((homeUrl, data) -> {
+                        try {
+                            Map<StopSale, List<List<Object>>> stopSaleListMap = ParserHomePage.parseGrayPage(homeUrl);
+                            parseMap(stopSaleListMap, data, stopSalePath);
+                            Optional<Map<String, Price>> priceMap = ParserHomePage.parseHomePage(homeUrl, "");
+                            if (priceMap.isPresent()) {
+                                priceMap.get().forEach((configUrl, homeData) -> {
+                                    try {
+                                        List<List<Object>> lists = ParserSpecificPage.parseSpecificPage(configUrl, errorPath);
+                                        if (lists != null) {
+                                            lists.forEach(list -> {
+                                                list = list.stream().map(obj -> "\"" + obj + "\"" + ",").collect(Collectors.toList());
+                                                String lst = "";
+                                                for (Object o : list) {
+                                                    lst += o;
+                                                }
+                                                String s = "finally value:" + data + "," + homeData + "," + lst;
+                                                System.out.println(s);
+                                                String write = data + "," + homeData + "," + lst + "\n";
+                                                try {
+                                                    writeStringtoFile(salePath, write, true);
+                                                } catch (IOException e) {
+                                                }
+                                            });
+                                        }
+                                    } catch (IOException e) {
                                     }
-                                } catch (IOException e) {}
-                            });
-                        }
+                                });
+                            }
 
-                    } catch (IOException e) {}
-                });
-                //解析灰色链接的数据
-                grayMap.forEach((homeUrl,data) ->{
+                        } catch (IOException e) {
+                        }
+                    });
+                    //解析灰色链接的数据
+                    grayMap.forEach((homeUrl, data) -> {
+                        try {
+                            Map<StopSale, List<List<Object>>> map = ParserHomePage.parseGrayPage(homeUrl);
+                            parseMap(map, data, stopSalePath);
+                        } catch (IOException e) {
+                        }
+                    });
+                } catch (Exception e) {
                     try {
-                        Map<StopSale, List<List<Object>>> map = ParserHomePage.parseGrayPage(homeUrl);
-                        parseMap(map,data,stopSalePath);
-                    } catch (IOException e) {}
-                });
-            } catch (IOException e) {}
-        });
+                        writeStringtoFile("error_url.txt",pageUrl + "\n",true);
+                    } catch (IOException e1) {}
+                }
+            });
     }
 
     private static void parseMap(Map<StopSale, List<List<Object>>> map,String data,String stopSalePath) throws IOException {
@@ -216,13 +213,6 @@ public class FetcherLink {
 
 
     public static void main(String[] args) {
-//        getAndWriteLinks("");
-        try {
-//            Document document = getDocument("http://www.autohome.com.cn/grade/carhtml/C.html");
-//            System.out.println(document);
-//            Object o = fetchSinglePageLink("http://www.autohome.com.cn/grade/carhtml/A.html");
-//            System.out.println(o);
-           FetcherLink.get("D:/tmp/autohome_sale_data.txt","D:/tmp/autohome__stopsale_data.txt","D:/tmp/autohome__error_url_data.txt");
-        } catch (IOException e) {}
+        FetcherAutohomeData.get("D:/tmp/autohome_sale_data.txt","D:/tmp/autohome__stopsale_data.txt","D:/tmp/autohome__error_url_data.txt");
     }
 }

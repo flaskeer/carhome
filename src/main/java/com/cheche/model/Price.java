@@ -23,6 +23,15 @@ public class Price {
     private String engine; //发动机
     private String specData;  //具体的数据
     private String status = "在售";  //销售状态
+    private String SId;   //id
+
+    public String getSId() {
+        return SId;
+    }
+
+    public void setSId(String SId) {
+        this.SId = SId;
+    }
 
     public String getCarName() {
         return carName;
@@ -112,23 +121,6 @@ public class Price {
         this.specData = specData;
     }
 
-//    @Override
-//    public String toString() {
-//        return MoreObjects.toStringHelper(this)
-//                .add("carName", carName)
-//                .add("newPrice", newPrice)
-//                .add("oldPrice", oldPrice)
-//                .add("carType", carType)
-//                .add("carSource", carSource)
-//                .add("score", score)
-//                .add("bigImg", bigImg)
-//                .add("factImg", factImg)
-//                .add("videoImg", videoImg)
-//                .add("engine", engine)
-//                .add("specData", specData)
-//                .add("status",status)
-//                .toString();
-//    }
 
     @Override
     public String toString() {
@@ -144,6 +136,7 @@ public class Price {
         sb.append("\"").append(videoImg).append("\"").append(",");
         sb.append("\"").append(engine).append("\"").append(",");
         sb.append("\"").append(specData).append("\"").append(",");
+        sb.append("\"").append(SId).append("\"").append(",");
         sb.append("\"").append(status).append("\"");
         return sb.toString();
     }

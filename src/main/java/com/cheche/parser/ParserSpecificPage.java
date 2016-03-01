@@ -30,7 +30,6 @@ public class ParserSpecificPage {
         try {
             content = getDocument(url).toString();
         } catch (Exception e) {
-//            writeStringtoFile(errorPath,url + "\n",true);
             return null;
         }
         if (content.contains("抱歉，暂无相关数据。") || content.contains("您访问的页面出错了")) {
@@ -47,6 +46,7 @@ public class ParserSpecificPage {
             Preconditions.checkNotNull(keyLink, "keyLink can not be null");
             Preconditions.checkNotNull(config, "config can not be null");
             Preconditions.checkNotNull(option, "option can not be null");
+            //用于将来的扩展
 //        String color = html.regex("var color = (.*?);",1).get();
 //        String innerColor = html.regex("var innerColor=(.*?);",1).get();
             String[] ids = split(idList);
@@ -64,29 +64,6 @@ public class ParserSpecificPage {
     }
 
 
-    /**
-     * 解析得到的列表数据  转换成需要的格式
-     * @param ids          [id1,id2,id3]
-     * @param configList   [[{id1=value},{id2=value},{id3=value}],[{id1=value},{id2=value},{id3=value}],[{id1=value},{id2=value},{id3=value}],[{},{},{}]]
-     * @param optionList   [[{id1=value},{id2=value},{id3=value}],[{id1=value},{id2=value},{id3=value}],[{id1=value},{id2=value},{id3=value}],[{},{},{}]]
-     * @param colorList    [{id1=value},{id2=value}]
-     * @param innerColorList  [{id1=value},{id2=value}]
-     * @return
-     */
-//    public static List<List<Object>> parseList(String[] ids,List<List<Map<String,String>>> configList,List<List<Map<String,String>>> optionList,
-//                                   List<Map<String,List<String>>> colorList,List<Map<String,List<String>>> innerColorList){
-//        List<List<Object>> contentLists = Lists.newArrayList();
-//        List<Object> contentList = Lists.newArrayList();
-//        for (String id : ids) {
-//            parseSpecList(id,configList,contentList);
-//            parseSpecList(id,optionList,contentList);
-//            parseSpecListForColor(id,colorList,contentList);
-//            parseSpecListForColor(id,innerColorList,contentList);
-//            contentLists.add(contentList);
-//            contentList = Lists.newArrayList();
-//        }
-//        return contentLists;
-//    }
 
     /**
      * 用来处理没有颜色的数据
@@ -126,10 +103,16 @@ public class ParserSpecificPage {
             }
             contentList.add(value);
         }
+        contentList.add(id);
 
     }
 
-
+    /**
+     * 用于将来的扩展
+      * @param id
+     * @param list
+     * @param contentList
+     */
     private static void parseSpecListForColor(String id,List<Map<String,List<String>>> list,List<Object> contentList){
         for (Map<String, List<String>> map : list) {
             List<String> ss = map.get(id);
@@ -153,23 +136,4 @@ public class ParserSpecificPage {
     }
 
 
-
-
-    public static void main(String[] args) {
-        try {
-            List<String> links = readLink("D:/tmp/stopsaleconfig.txt");
-            updateData(links,"D:/tmp/error_url.txt");
-        } catch (IOException e) {
-            logger.warn(e.getMessage());
-        }
-
-//        //测试单个页面专用
-//        try {
-//            Object o = parseSpecificPage("http://car.autohome.com.cn/2045/2851/options.html","D:/tmp/error_link.txt");
-//            System.out.println(o);
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//        }
-
-    }
 }
