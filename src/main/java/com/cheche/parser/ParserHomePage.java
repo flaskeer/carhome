@@ -152,7 +152,16 @@ public class ParserHomePage {
             sid = matcher.group(1);
         }
         String jsonp = "http://api.che168.com/auto/ForAutoCarPCInterval.ashx?callback=che168CallBack&_appid=cms&sid=" + sid + "&yid=0&pid=110000";
-        Document document = getDocument(jsonp);
+        Document document = null;
+        try {
+            document = getDocument(jsonp);
+        } catch (Exception e) {
+            if(e instanceof IllegalArgumentException){
+                writeStringtoFile("error_url",url,true);
+            }else{
+                throw e;
+            }
+        }
         if(document == null) return null;
         return parseJsonp(document);
     }

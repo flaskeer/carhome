@@ -147,21 +147,21 @@ public class FetcherLink {
                             priceMap.get().forEach((configUrl, homeData) ->{
                                 try {
                                     List<List<Object>> lists = ParserSpecificPage.parseSpecificPage(configUrl, errorPath);
-                                    assert lists != null;
-                                    lists.forEach(list ->{
-                                        list = list.stream().map(obj -> "\"" + obj + "\"" + ",").collect(Collectors.toList());
-                                        String lst = "";
-                                        for (Object o : list) {
-                                            lst += o;
-                                        }
-                                        String s = "finally value:" + data + "," + homeData + "," + lst;
-                                        System.out.println(s);
-                                        String write = data + "," + homeData + "," + lst + "\n";
-                                        try {
-                                            writeStringtoFile(salePath,write,true);
-                                        } catch (IOException e) {}
-                                    });
-
+                                    if(lists != null){
+                                        lists.forEach(list ->{
+                                            list = list.stream().map(obj -> "\"" + obj + "\"" + ",").collect(Collectors.toList());
+                                            String lst = "";
+                                            for (Object o : list) {
+                                                lst += o;
+                                            }
+                                            String s = "finally value:" + data + "," + homeData + "," + lst;
+                                            System.out.println(s);
+                                            String write = data + "," + homeData + "," + lst + "\n";
+                                            try {
+                                                writeStringtoFile(salePath,write,true);
+                                            } catch (IOException e) {}
+                                        });
+                                    }
                                 } catch (IOException e) {}
                             });
                         }
