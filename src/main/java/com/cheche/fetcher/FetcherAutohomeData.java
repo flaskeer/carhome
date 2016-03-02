@@ -18,9 +18,12 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Scanner;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
+
+import static com.cheche.common.Commons.readLink;
 import static com.cheche.common.Commons.writeStringtoFile;
 /**
  * Created by user on 2016/2/17.
@@ -212,7 +215,14 @@ public class FetcherAutohomeData {
     }
 
 
-    public static void main(String[] args) {
-        FetcherAutohomeData.get("D:/tmp/autohome_sale_data.txt","D:/tmp/autohome__stopsale_data.txt","D:/tmp/autohome__error_url_data.txt");
+    public static void main(String[] args) throws IOException {
+        Scanner scanner = new Scanner(System.in);
+        System.out.println("在售数据的存储路径:");
+        String salePath = scanner.next();
+        System.out.println("停售数据的存储路径:");
+        String stopSalePath = scanner.next();
+        System.out.println("错误的URL存储路径");
+        String errorPath = scanner.next();
+        FetcherAutohomeData.get(salePath,stopSalePath,errorPath);
     }
 }

@@ -109,18 +109,18 @@ public class FetcherFilter {
 
 
     public static void main(String[] args) {
-//        List<String> params = Lists.newArrayList();
-//        params.add("1000");
-//        params.add("1001");
-//        params.add("1003");
-//        params.add("1004");
-//        params.forEach(param -> {
-//            try {
-//                fetchLink(param);
-//            } catch (Exception e) {
-//                e.printStackTrace();
-//            }
-//        });
+        List<String> params = Lists.newArrayList();
+        params.add("1000");
+        params.add("1001");
+        params.add("1003");
+        params.add("1004");
+        params.forEach(param -> {
+            try {
+                fetchLink(param);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        });
         try {
             List<String> links = readLink("D:/tmp/filter_link.txt");
             links.forEach(link ->{

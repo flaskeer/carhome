@@ -158,7 +158,7 @@ public class ParserHomePage {
             document = getDocument(jsonp);
         } catch (Exception e) {
             if(e instanceof IllegalArgumentException){
-                writeStringtoFile("error_url.txt",url,true);
+                writeStringtoFile("error_url.txt",url + "\n",true);
             }else{
                 throw e;
             }
