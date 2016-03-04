@@ -93,8 +93,13 @@ public class FetcherFilter {
         String imgSrc = document.select("img").attr("src");
         contents.add(imgSrc);
         Elements pElems = document.select("#divCascading_d2-270666610-2a31 > div > p");
+        System.out.println("pelems size:" + pElems.size());
         for (Element pElem : pElems) {
-            contents.add(pElem.text());
+            String text = pElem.text();
+            System.out.println("raw text:" + text);
+            String val = text.replaceAll("\\u00A0","");
+            System.out.println("now text:" + val);
+            contents.add(val);
         }
         List<String> collect = contents.stream().map(content -> "\"" + content + "\"" + ",").collect(Collectors.toList());
         String result = "";
@@ -110,18 +115,18 @@ public class FetcherFilter {
 
 
     public static void main(String[] args) {
-        List<String> params = Lists.newArrayList();
-        params.add("1000");
-        params.add("1001");
-        params.add("1003");
-        params.add("1004");
-        params.forEach(param -> {
-            try {
-                fetchLink(param);
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        });
+//        List<String> params = Lists.newArrayList();
+//        params.add("1000");
+//        params.add("1001");
+//        params.add("1003");
+//        params.add("1004");
+//        params.forEach(param -> {
+//            try {
+//                fetchLink(param);
+//            } catch (Exception e) {
+//                e.printStackTrace();
+//            }
+//        });
         try {
             List<String> links = readLink("D:/tmp/filter_link.txt");
             links.forEach(link ->{
