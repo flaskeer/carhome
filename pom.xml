@@ -159,7 +159,7 @@
 				<configuration>
 					<archive>
 						<manifest>
-							<mainClass>com.cheche.fetcher.FetcherSLFilter</mainClass>
+							<mainClass>com.cheche.fetcher.FetcherAutohomeData</mainClass>
 							<addClasspath>true</addClasspath>
 							<classpathPrefix>lib/</classpathPrefix>
 						</manifest>
