@@ -1,7 +1,7 @@
 ##整理了一些这段时间做爬虫的思路：
 
 ##需求：
-从首页http://www.autohome.com.cn/car/?pvareaid=101452开始，一共1962款车系需要全部爬取，
+从首页（http://www.autohome.com.cn/car/?pvareaid=101452） 开始，一共1962款车系需要全部爬取，
 然后需要爬取三级目录，例如 阿尔法罗密欧 - 阿尔法罗密欧 - MiTo这种格式，爬取到[MiTo](http://www.autohome.com.cn/715/#levelsource=000000000_0&pvareaid=101594)
 的详情页，需要获取的数据包括新车指导价，二手车价格等等，然后进入[参数配置](http://car.autohome.com.cn/config/series/2097.html)
 的页面，将所有车款的信息爬取完毕。在车系首页会有两种情况，参数配置可点击或者不可点击,同时需要对停售的链接进行单独处理，或者停售车型的数据。关于详细车款组的信息
