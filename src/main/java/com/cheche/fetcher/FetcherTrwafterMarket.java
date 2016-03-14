@@ -3,14 +3,18 @@ package com.cheche.fetcher;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
+import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import org.apache.commons.io.FileUtils;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileReader;
 import java.io.IOException;
 import java.net.URLEncoder;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -19,12 +23,18 @@ import java.util.Map;
  */
 public class FetcherTrwafterMarket {
 
-    private static String getDocument(String url) throws IOException {
-        Document document = Jsoup.connect(url)
-                .ignoreContentType(true)
-                .header("X-Current-Language-Code","zh-CN")
-                .header("X-Request-Verification-Token","E_MHw3VzcdTjCei7c9N6HuFJYLK_uuacYAE-mZyPrnbfOAZ4oC0bgzM62Yavkp47nRIcch1r-ZfbS18dI7YtPO9h-Wc1:icW9QQnPRg8xq9lU1HtCLMCafyrKnS0896ctDMhog4UF4ahtqqgECyPcSS_c-aIbXdus0kQg5jNfOQMaiH0Z-NWbOzM1")
-                .get();
+    private static String getDocument(String url) {
+        Document document = null;
+        try {
+            document = Jsoup.connect(url)
+                    .ignoreContentType(true)
+                    .header("X-Current-Language-Code","zh-CN")
+                    .header("X-Request-Verification-Token","E_MHw3VzcdTjCei7c9N6HuFJYLK_uuacYAE-mZyPrnbfOAZ4oC0bgzM62Yavkp47nRIcch1r-ZfbS18dI7YtPO9h-Wc1:icW9QQnPRg8xq9lU1HtCLMCafyrKnS0896ctDMhog4UF4ahtqqgECyPcSS_c-aIbXdus0kQg5jNfOQMaiH0Z-NWbOzM1")
+                    .timeout(60000)
+                    .get();
+        } catch (IOException e) {
+            getDocument(url);
+        }
         return document.text().replaceAll("&quot;","");
     }
 
@@ -85,7 +95,8 @@ public class FetcherTrwafterMarket {
         for (int i = 0; i < models.size(); i++) {
             String text = models.getJSONObject(i).getString("productCode");
             String value = models.getJSONObject(i).getString("attributeText");
-            map.put(text,value);
+            String substring = value.substring(text.indexOf("安装位置: "), text.indexOf("安装位置: ") + 8);
+            map.put(text,substring);
         }
         return map;
     }
@@ -105,10 +116,29 @@ public class FetcherTrwafterMarket {
         return map;
     }
 
+    public static List<String> readLink(String path) throws IOException {
+        List<String> links = Lists.newArrayList();
+        BufferedReader reader = new BufferedReader(new FileReader(new File(path)));
+        String input = null;
+        while((input = reader.readLine()) != null){
+            links.add(input);
+        }
+        return links;
+    }
+
 
     public static void main(String[] args) throws IOException {
-        Map<String, String> map = parseHomePage("https://www.trwaftermarket.com/api/CatalogueData?market=cn&vehicleType=P");
-        parseModels(map,"D:/tmp/traftermarket.txt");
+//        Map<String, String> map = parseHomePage("https://www.trwaftermarket.com/api/CatalogueData?market=cn&vehicleType=P");
+//        parseModels(map,"D:/tmp/traftermarket.txt");
+        List<String> strings = readLink("D:/tmp/tmp.txt");
+        strings.forEach(string ->{
+            String s = string.substring(string.indexOf("安装位置: "), string.indexOf("安装位置: ") + 8);
+            try {
+                writeStringtoFile("D:/tmp/tetetete.txt",s + "\n",true);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        });
     }
 
 }

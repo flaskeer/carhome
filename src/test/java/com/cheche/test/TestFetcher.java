@@ -17,4 +17,11 @@ public class TestFetcher {
         System.out.println(document);
     }
 
+    @Test
+    public void testString() {
+        String text = "安装位置: 后桥; 在每根车桥上的数量: 1; 减振器的类型: 机油压力; 减振器的结构: 可伸缩的保险杠; 减振器系统: 双管; 减振器的固定方式";
+        String substring = text.substring(text.indexOf("安装位置: "), text.indexOf("安装位置: ") + 8);
+        System.out.println(substring);
+    }
+
 }

@@ -48,7 +48,7 @@ public class HttpClientUtil {
      * @param httpGet
      * @return
      */
-    private static String sendGet(HttpGet httpGet,String charset){
+    public static String sendGet(HttpGet httpGet,String charset){
         CloseableHttpResponse response = null;
         HttpEntity entity = null;
         String content = null;
