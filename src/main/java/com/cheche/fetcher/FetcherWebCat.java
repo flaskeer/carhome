@@ -3,10 +3,10 @@ package com.cheche.fetcher;
 
 import com.cheche.util.HttpClientUtil;
 import com.google.common.collect.Maps;
-import org.apache.http.HttpHeaders;
 import org.apache.http.client.methods.HttpGet;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
 import java.io.IOException;
@@ -43,8 +43,47 @@ public class FetcherWebCat {
        for (Map.Entry<String,String> manufacturerEntry : map.entrySet()) {
            String url = "https://webcat.zf.com/nc2_dialog.asp?MODE&KMODNR=0&SUCHEN2&KAT_KZ=N&KHERNR=" + manufacturerEntry.getKey();
            Map<String, String> typeMap = parseHomeList(url);
-//           System.out.println(manufacturerEntry.getValue() + ":" + typeMap);
+           for (Map.Entry<String,String> typeEntry : typeMap.entrySet()) {
+//               System.out.println(manufacturerEntry.getKey() + ":" + manufacturerEntry.getValue() + ":" + typeMap);
+               Map<String, String> hrefMap = parseHref(manufacturerEntry.getKey(), typeEntry.getKey());
+               for (Map.Entry<String,String> hrefEntry : hrefMap.entrySet()) {
+                   parseSpecPage(hrefEntry.getKey());
+               }
+           }
        }
+    }
+
+    private static void parseSpecPage(String url) {
+        Document content = getRawContent(url);
+        Map<String,String> map = Maps.newLinkedHashMap();
+        Elements row2Elems = content.select(".TableRow2");
+        Elements row1Elems = content.select(".TableRow1");
+        System.out.println(row2Elems);
+        System.out.println(row1Elems);
+        parseSpecData(row2Elems);
+        parseSpecData(row1Elems);
+    }
+
+    private static void parseSpecData(Elements elements) {
+        for (Element element : elements) {
+            int tdSize = element.select("td").size();
+            if(tdSize == 7) {
+                System.out.println(element.select("td").size());
+                String id = element.select("td").get(2).select("b > a").text();
+                String name = element.select("td").get(5).text();
+                String position = element.select("td").get(6).select("ul").get(0).select("li").text();
+                System.out.println(id + ":" + name + ":" + position);
+            } else if (tdSize == 6){
+                System.out.println(element.select("td").size());
+                String id = element.select("td").get(2).select("b > a").text();
+                String name = element.select("td").get(4).text();
+                String position = element.select("td").get(5).select("ul").get(0).select("li").text();
+                System.out.println(id + ":" + name + ":" + position);
+            } else{
+                continue;
+            }
+
+        }
     }
 
     private static Map<String, String> parseHomeList(String url) {
@@ -59,7 +98,26 @@ public class FetcherWebCat {
         return map;
     }
 
-//    private static Map<String,String> parseHref(String )
+    private static Map<String,String> parseHref(String manufacturerId,String typeId) {
+        String url = "https://webcat.zf.com/nc2_dialog.asp?MODE=&SUCHEN2=OK&KAT_KZ=N&KHERNR=" + manufacturerId +"&KMODNR=" + typeId + "&BJ=&MCODE=&HUBRAUM=&HUBRAUM_10=X&HUBRAUM_10x=10&LEISTUNG=&LEISTUNG_ART=KW&LEISTUNG_10=%23%23&LEISTUNG_10x=10&DBPAGESIZE=0";
+        Document content = getRawContent(url);
+        Map<String,String> map = Maps.newLinkedHashMap();
+        Elements aElems = content.select("a");
+        for (Element aElem : aElems) {
+            if(aElem.attr("href").startsWith("nc2_dialog_teile.asp")) {
+                String needUrl = getNeedUrl(aElem.attr("href"));
+                map.put(needUrl,aElem.select("b").text());
+            }
+        }
+//        System.out.println(map);
+        return map;
+    }
+
+    private static String getNeedUrl(String url) {
+        String substring = url.substring(url.indexOf("KAT_KZ=N") + 8);
+        String link = "https://webcat.zf.com/nc2_dialog_teile.asp?MODE=&PICTO_SEL=&EINSPNR_TYP=32&SUCHEN=%E6%98%BE%E7%A4%BA%E9%83%A8%E4%BB%B6&DBPAGESIZE=50" + substring;
+        return link;
+    }
 
 
     public static void main(String[] args) throws IOException {
