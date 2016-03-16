@@ -39,51 +39,64 @@ public class FetcherWebCat {
         return map;
     }
 
-    private static void getData(Map<String,String> map) {
+    private static void getData(Map<String,String> map,String storePath) throws IOException {
        for (Map.Entry<String,String> manufacturerEntry : map.entrySet()) {
            String url = "https://webcat.zf.com/nc2_dialog.asp?MODE&KMODNR=0&SUCHEN2&KAT_KZ=N&KHERNR=" + manufacturerEntry.getKey();
            Map<String, String> typeMap = parseHomeList(url);
            for (Map.Entry<String,String> typeEntry : typeMap.entrySet()) {
-//               System.out.println(manufacturerEntry.getKey() + ":" + manufacturerEntry.getValue() + ":" + typeMap);
                Map<String, String> hrefMap = parseHref(manufacturerEntry.getKey(), typeEntry.getKey());
                for (Map.Entry<String,String> hrefEntry : hrefMap.entrySet()) {
-                   parseSpecPage(hrefEntry.getKey());
+                   Map<String, String> dataMap = parseSpecPage(hrefEntry.getKey());
+                   for (Map.Entry<String,String> dataEntry : dataMap.entrySet()) {
+                       String data = "\"" + manufacturerEntry.getValue()  + "\"" + "," +
+                                     "\"" + typeEntry.getValue() + "\"" + "," +
+                                     "\"" + hrefEntry.getValue() + "\"" + "," +
+                                     "\"" + dataEntry.getKey()   + "\"" +","  +
+                                     "\"" + dataEntry.getValue() + "\"";
+                       writeStringtoFile(storePath,data + "\n",true);
+                       System.out.println("data:" + data);
+                   }
                }
            }
        }
     }
 
-    private static void parseSpecPage(String url) {
+    private static Map<String,String> parseSpecPage(String url) {
         Document content = getRawContent(url);
         Map<String,String> map = Maps.newLinkedHashMap();
         Elements row2Elems = content.select(".TableRow2");
         Elements row1Elems = content.select(".TableRow1");
-        System.out.println(row2Elems);
-        System.out.println(row1Elems);
-        parseSpecData(row2Elems);
-        parseSpecData(row1Elems);
+        Map<String, String> row2Map = parseSpecData(row2Elems);
+        Map<String, String> row1Map = parseSpecData(row1Elems);
+        map.putAll(row1Map);
+        map.putAll(row2Map);
+        return map;
     }
 
-    private static void parseSpecData(Elements elements) {
+    private static Map<String,String> parseSpecData(Elements elements) {
+        Map<String,String> map = Maps.newLinkedHashMap();
         for (Element element : elements) {
             int tdSize = element.select("td").size();
             if(tdSize == 7) {
-                System.out.println(element.select("td").size());
                 String id = element.select("td").get(2).select("b > a").text();
                 String name = element.select("td").get(5).text();
                 String position = element.select("td").get(6).select("ul").get(0).select("li").text();
-                System.out.println(id + ":" + name + ":" + position);
+                if(name.contains("减振器")) {
+                    map.put(id + "\"" + ","  +"\"" + name,position);
+                }
             } else if (tdSize == 6){
-                System.out.println(element.select("td").size());
                 String id = element.select("td").get(2).select("b > a").text();
                 String name = element.select("td").get(4).text();
                 String position = element.select("td").get(5).select("ul").get(0).select("li").text();
-                System.out.println(id + ":" + name + ":" + position);
+                if(name.contains("减振器")) {
+                    map.put(id + "\"" + ","  +"\"" + name,position);
+                }
             } else{
                 continue;
             }
 
         }
+        return map;
     }
 
     private static Map<String, String> parseHomeList(String url) {
@@ -109,7 +122,6 @@ public class FetcherWebCat {
                 map.put(needUrl,aElem.select("b").text());
             }
         }
-//        System.out.println(map);
         return map;
     }
 
@@ -122,6 +134,6 @@ public class FetcherWebCat {
 
     public static void main(String[] args) throws IOException {
         Map<String, String> map = parseHomePage("https://webcat.zf.com/nc2_dialog.asp?MODE&KMODNR=0&SUCHEN2&KAT_KZ=P&KAT_KZ=N&KHERNR=2246");
-        getData(map);
+        getData(map,"D:/tmp/webcat3.txt");
     }
 }
