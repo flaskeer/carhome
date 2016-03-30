@@ -10,6 +10,7 @@ import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
 import java.io.IOException;
+import java.util.LinkedHashMap;
 import java.util.Map;
 
 import static com.cheche.common.Commons.*;
@@ -28,7 +29,7 @@ public class FetcherWebCat {
     }
 
     private static Map<String, String> parseHomePage(String url) throws IOException {
-        Map<String,String> map = Maps.newLinkedHashMap();
+        LinkedHashMap<String,String> map = Maps.newLinkedHashMap();
         Document document = getRawContent(url);
         Elements optElems = document.select(".SelectCourierGray > option");
         optElems.stream().filter(optElem -> !optElem.text().equals("Auswahl")).forEach(optElem -> {
@@ -134,6 +135,7 @@ public class FetcherWebCat {
 
     public static void main(String[] args) throws IOException {
         Map<String, String> map = parseHomePage("https://webcat.zf.com/nc2_dialog.asp?MODE&KMODNR=0&SUCHEN2&KAT_KZ=P&KAT_KZ=N&KHERNR=2246");
+        System.out.println(map);
         getData(map,"D:/tmp/webcat3.txt");
     }
 }

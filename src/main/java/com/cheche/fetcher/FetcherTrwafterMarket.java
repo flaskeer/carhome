@@ -30,7 +30,6 @@ public class FetcherTrwafterMarket {
                     .ignoreContentType(true)
                     .header("X-Current-Language-Code","zh-CN")
                     .header("X-Request-Verification-Token","E_MHw3VzcdTjCei7c9N6HuFJYLK_uuacYAE-mZyPrnbfOAZ4oC0bgzM62Yavkp47nRIcch1r-ZfbS18dI7YtPO9h-Wc1:icW9QQnPRg8xq9lU1HtCLMCafyrKnS0896ctDMhog4UF4ahtqqgECyPcSS_c-aIbXdus0kQg5jNfOQMaiH0Z-NWbOzM1")
-                    .timeout(60000)
                     .get();
         } catch (IOException e) {
             getDocument(url);
@@ -57,12 +56,16 @@ public class FetcherTrwafterMarket {
             Map<String, String> modelMap = getData("models", modelIdUrl);
             for (Map.Entry<String,String> modelEntry : modelMap.entrySet()) {
                 String vehicleIdUrl = modelIdUrl + "&modelId=" + modelEntry.getValue();
+                System.out.println("vehurl:" + vehicleIdUrl);
                 Map<String, String> vehiclesMap = getData("vehicles", vehicleIdUrl);
                 for (Map.Entry<String,String> veicleEntry : vehiclesMap.entrySet()) {
                     String variantUrl = vehicleIdUrl + "&vehicleId=" + veicleEntry.getValue();
+                    System.out.println("variantUrl:" + variantUrl);
                     Map<String, String> variantMap = getData("variants", variantUrl);
                     for (Map.Entry<String,String> variantEntry : variantMap.entrySet()) {
-                        String finallyUrl = variantUrl + "variantId=" + variantEntry.getValue() + "&productGroupId=854";
+
+                        String finallyUrl = variantUrl + variantEntry.getValue() + "&productGroupId=854";
+                        System.out.println("finally:" + finallyUrl);
                         Map<String, String> productResultMap = getFinallyData("productResults", finallyUrl);
                         if(productResultMap == null) continue;
                         for (Map.Entry<String,String> productEntry : productResultMap.entrySet()) {
@@ -95,8 +98,8 @@ public class FetcherTrwafterMarket {
         for (int i = 0; i < models.size(); i++) {
             String text = models.getJSONObject(i).getString("productCode");
             String value = models.getJSONObject(i).getString("attributeText");
-            String substring = value.substring(text.indexOf("安装位置: "), text.indexOf("安装位置: ") + 8);
-            map.put(text,substring);
+//            String substring = value.substring(text.indexOf("安装位置: "), text.indexOf("安装位置: ") + 8);
+            map.put(text,value);
         }
         return map;
     }
@@ -128,17 +131,18 @@ public class FetcherTrwafterMarket {
 
 
     public static void main(String[] args) throws IOException {
-//        Map<String, String> map = parseHomePage("https://www.trwaftermarket.com/api/CatalogueData?market=cn&vehicleType=P");
-//        parseModels(map,"D:/tmp/traftermarket.txt");
-        List<String> strings = readLink("D:/tmp/tmp.txt");
-        strings.forEach(string ->{
-            String s = string.substring(string.indexOf("安装位置: "), string.indexOf("安装位置: ") + 8);
-            try {
-                writeStringtoFile("D:/tmp/tetetete.txt",s + "\n",true);
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        });
+        Map<String, String> map = parseHomePage("https://www.trwaftermarket.com/api/CatalogueData?market=cn&vehicleType=P");
+        System.out.println(map);
+        parseModels(map,"D:/tmp/traftermarket222.txt");
+//        List<String> strings = readLink("D:/tmp/tmp.txt");
+//        strings.forEach(string ->{
+//            String s = string.substring(string.indexOf("安装位置: "), string.indexOf("安装位置: ") + 8);
+//            try {
+//                writeStringtoFile("D:/tmp/tetetete.txt",s + "\n",true);
+//            } catch (IOException e) {
+//                e.printStackTrace();
+//            }
+//        });
     }
 
 }
