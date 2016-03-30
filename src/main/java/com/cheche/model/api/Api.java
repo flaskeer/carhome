@@ -2,10 +2,7 @@ package com.cheche.model.api;
 
 import com.alibaba.fastjson.annotation.JSONField;
 import com.cheche.util.MapConveter;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import java.io.Serializable;
 import java.util.Map;
@@ -39,6 +36,7 @@ import java.util.Map;
  */
 @Setter
 @Getter
+@Builder
 @NoArgsConstructor
 @AllArgsConstructor
 public class Api implements Serializable{
