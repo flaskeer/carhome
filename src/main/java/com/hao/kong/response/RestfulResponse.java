@@ -29,6 +29,10 @@ public class RestfulResponse<T> implements Serializable {
 
     private List<?> rows;
 
+    public RestfulResponse() {
+        this.success = true;
+    }
+
     public RestfulResponse(T msg) {
         if (msg != null) {
             this.success = false;
