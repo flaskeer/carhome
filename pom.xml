@@ -189,7 +189,7 @@
 				<configuration>
 					<archive>
 						<manifest>
-							<mainClass>com.cheche.fetcher.FetcherTrwafterMarket</mainClass>
+							<mainClass>com.hao.fetcher.FetcherTrwafterMarket</mainClass>
 							<addClasspath>true</addClasspath>
 							<classpathPrefix>lib/</classpathPrefix>
 						</manifest>
