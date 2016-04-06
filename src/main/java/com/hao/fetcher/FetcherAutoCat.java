@@ -3,12 +3,8 @@ package com.hao.fetcher;
 import com.google.common.collect.Lists;
 import org.jsoup.nodes.Document;
 import org.jsoup.select.Elements;
-
 import java.io.IOException;
 import java.util.List;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.LinkedBlockingQueue;
 
 import static com.hao.common.Commons.*;
 /**
@@ -18,8 +14,6 @@ import static com.hao.common.Commons.*;
  */
 public class FetcherAutoCat {
 
-    private static ExecutorService executorService = Executors.newFixedThreadPool(1000);
-    private static LinkedBlockingQueue<String> specUrlQueue = new LinkedBlockingQueue<>();
     /**
      * 从http://autocat.gates.cn/App/CarSearch去爬取到所有的品牌
      * @param url
@@ -131,20 +125,8 @@ public class FetcherAutoCat {
         for (String brandUrl : brandUrls) {
             List<String> specUrls = parseBrandLink(brandUrl);
             for (String specUrl : specUrls) {
-                specUrlQueue.put(specUrl);
+                parseSpecPage(specUrl, storePath);
             }
-        }
-
-        for (int i = 0; i < 300; i++) {
-            executorService.execute(() -> {
-                while (true) {
-                    try {
-                        parseSpecPage(specUrlQueue.take(), storePath);
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }
-                }
-            });
         }
 
     }
