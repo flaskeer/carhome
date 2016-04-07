@@ -3,6 +3,7 @@ package com.hao.fetcher;
 import com.google.common.collect.Lists;
 import org.jsoup.nodes.Document;
 import org.jsoup.select.Elements;
+
 import java.io.IOException;
 import java.util.List;
 
@@ -107,9 +108,21 @@ public class FetcherAutoCat {
         } else {
             productTrElems.stream().filter(productTrElem -> !productTrElem.text().contains("技术支持")).forEach(productTrElem -> {
                 Elements productTdElems = productTrElem.select("td");
-                productTdElems.forEach(productTdElem -> {
-                    builder.append("\"").append(productTdElem.text()).append("\"").append(",");
-                });
+                int size = productTdElems.size();
+                if (size == 6 || size == 7) {
+                    System.out.println("now is size == 6 || 7:.....");
+                    productTdElems.forEach(productTdElem -> {
+                        builder.append("\"").append(productTdElem.text()).append("\"").append(",");
+                    });
+                    for (int i = 0; i < 5; i++) {
+                        builder.append("\"").append("\"").append(",");
+                    }
+                } else {
+                    System.out.println("now is size == " + size);
+                    productTdElems.forEach(productTdElem -> {
+                        builder.append("\"").append(productTdElem.text()).append("\"").append(",");
+                    });
+                }
             });
             try {
                 writeStringtoFile(filePath, builder.toString() + "\n", true);
@@ -134,7 +147,7 @@ public class FetcherAutoCat {
 
     public static void main(String[] args) {
         try {
-            execute("http://autocat.gates.cn/App/CarSearch","D:/tmp/autocat.txt");
+            execute("http://autocat.gates.cn/App/CarSearch","D:/tmp/autocattest.txt");
         } catch (Exception e) {
             e.printStackTrace();
         }
