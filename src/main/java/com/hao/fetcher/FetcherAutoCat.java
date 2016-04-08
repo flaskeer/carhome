@@ -2,6 +2,7 @@ package com.hao.fetcher;
 
 import com.google.common.collect.Lists;
 import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
 import java.io.IOException;
@@ -94,9 +95,10 @@ public class FetcherAutoCat {
             tdElems = tableElems.get(1).select("tr").get(1).select("td");
         }
         if (tdElems != null) {
-            tdElems.forEach(tdElem -> {
-               builder.append("\"").append(tdElem.text()).append("\"").append(",");
-            });
+            for (Element tdElem : tdElems) {
+                builder.append("\"").append(tdElem.text()).append("\"").append(",");
+            }
+
         }
         System.out.println("now downloading url is:" + specLink);
         Elements productTrElems = null;
@@ -106,24 +108,14 @@ public class FetcherAutoCat {
         if(productTrElems == null) {
             System.out.println(content);
         } else {
-            productTrElems.stream().filter(productTrElem -> !productTrElem.text().contains("技术支持")).forEach(productTrElem -> {
-                Elements productTdElems = productTrElem.select("td");
-                int size = productTdElems.size();
-                if (size == 6 || size == 7) {
-                    System.out.println("now is size == 6 || 7:.....");
+                productTrElems.stream().filter(productTrElem -> productTrElem.text().contains("滤清器")).forEach(productTrElem -> {
+                    Elements productTdElems = productTrElem.select("td");
                     productTdElems.forEach(productTdElem -> {
                         builder.append("\"").append(productTdElem.text()).append("\"").append(",");
                     });
-                    for (int i = 0; i < 5; i++) {
-                        builder.append("\"").append("\"").append(",");
-                    }
-                } else {
-                    System.out.println("now is size == " + size);
-                    productTdElems.forEach(productTdElem -> {
-                        builder.append("\"").append(productTdElem.text()).append("\"").append(",");
-                    });
-                }
-            });
+                });
+            }
+
             try {
                 writeStringtoFile(filePath, builder.toString() + "\n", true);
             } catch (IOException e) {
@@ -131,7 +123,6 @@ public class FetcherAutoCat {
             }
             System.out.println(builder.toString());
         }
-    }
 
     public static void execute(String url,String storePath) throws Exception {
         List<String> brandUrls = fetchBrandLinks(url);
