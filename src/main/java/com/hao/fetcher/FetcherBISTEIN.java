@@ -29,7 +29,11 @@ public class FetcherBISTEIN {
 
     public static Map<String,Integer> getBrands() {
         String url = "http://www.bilstein.com.tw/product.php";
+
         Document content = getDocument(url, "UTF-8");
+        if (content == null) {
+            getBrands();
+        }
         Elements liElems = content.select(".carBrand > ul > li");
         Map<String,Integer> brands = Maps.newLinkedHashMap();
         liElems.forEach(liElem -> brands.put(liElem.text(),Integer.parseInt(parseNumber(liElem))));
@@ -39,7 +43,11 @@ public class FetcherBISTEIN {
 
     public static Map<String,Integer> getType(int number) {
         String url = "http://www.bilstein.com.tw/search_menu.php?car=model&b1sn=" + number;
+
         Document content = getDocument(url, "UTF-8");
+        if (content == null) {
+            getType(number);
+        }
         Elements liElems = content.select("li");
         Map<String,Integer> map = Maps.newLinkedHashMap();
         liElems.forEach(liElem -> map.put(liElem.text(),Integer.parseInt(parseNumber(liElem))));
@@ -49,6 +57,9 @@ public class FetcherBISTEIN {
     public static Map<String,String> getYear(int number) {
         String url = "http://www.bilstein.com.tw/search_menu.php?car=year&b2sn=" + number;
         Document content = getDocument(url, "UTF-8");
+        if (content == null) {
+            getYear(number);
+        }
         Elements liElems = content.select("li");
         Map<String,String> hrefs = Maps.newLinkedHashMap();
 
@@ -63,6 +74,9 @@ public class FetcherBISTEIN {
 
     public static List<String> getShock(String href) {
         Document content = getDocument(href, "UTF-8");
+        if (content == null) {
+            getShock(href);
+        }
         Elements liElems = content.select(".searchList > li");
         List<String> dataList = Lists.newArrayList();
         liElems.forEach(liElem -> {

@@ -126,6 +126,7 @@ public class FetcherAutoCat {
 
     public static void execute(String url,String storePath) throws Exception {
         List<String> brandUrls = fetchBrandLinks(url);
+
         for (String brandUrl : brandUrls) {
             List<String> specUrls = parseBrandLink(brandUrl);
             for (String specUrl : specUrls) {
