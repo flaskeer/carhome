@@ -5,7 +5,7 @@ import java.util.List;
 /**
  * Created by user on 2016/4/12.
  */
-public class JobSubmitRequest {
+public class JobSubmitRequest extends Body{
 
     private List<Job> jobs;
 

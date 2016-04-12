@@ -22,4 +22,11 @@ public class JobTracker {
         }
     }
 
+    public Command invokeSync(Command requestCommand) {
+        return null;
+    }
+
+    public void invokeAsync(Command request,AsyncCallBack asyncCallback) {
+
+    }
 }
