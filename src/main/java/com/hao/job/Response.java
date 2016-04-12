@@ -1,5 +1,6 @@
 package com.hao.job;
 
+import com.google.common.base.MoreObjects;
 import com.google.common.base.Objects;
 
 /**
@@ -41,7 +42,7 @@ public class Response {
 
     @Override
     public String toString() {
-        return Objects.toStringHelper(this)
+        return MoreObjects.toStringHelper(this)
                 .add("success", success)
                 .add("msg", msg)
                 .add("code", code)

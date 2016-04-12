@@ -1,6 +1,7 @@
 package com.hao.job;
 
 import com.alibaba.fastjson.JSON;
+import com.hao.exception.JobSubmitException;
 
 import javax.validation.constraints.NotNull;
 
@@ -36,5 +37,11 @@ public class Job {
     @Override
     public String toString() {
         return JSON.toJSONString(this);
+    }
+
+    public void checkField() {
+        if (taskId == null) {
+            throw new JobSubmitException("taskId can not be null~ job is:" + toString());
+        }
     }
 }
