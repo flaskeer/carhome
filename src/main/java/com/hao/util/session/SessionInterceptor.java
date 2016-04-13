@@ -13,34 +13,43 @@ import static com.hao.constants.Constants.LOGIN_USER;
  * Created by user on 2016/3/31.
  */
 public class SessionInterceptor extends HandlerInterceptorAdapter {
-
-    @Value("${login.exclued.uri}")
-    private String[] excludeUris;
-
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
-        if (isInclude(request.getRequestURI())) {
-            if (SessionManager.INSTANCE.isNotLogin(request.getSession())) {
-                response.sendRedirect(LOGIN_URI);
-                return false;
-            }
-            request.setAttribute(LOGIN_USER,SessionManager.INSTANCE.getLoginUser(request.getSession()));
+        if (SessionManager.INSTANCE.isNotLogin(request.getSession())) {
+            response.sendRedirect(LOGIN_URI);
+            return false;
         }
+        request.setAttribute(LOGIN_USER,SessionManager.INSTANCE.getLoginUser(request.getSession()));
         return true;
     }
 
-    private boolean isExclued(String uri) {
-        if (excludeUris != null && excludeUris.length > 0 ) {
-            for (String excludeUri : excludeUris) {
-                if (StringUtils.isNotBlank(excludeUri) && excludeUri.trim().equals(uri)) {
-                    return true;
-                }
-            }
-        }
-        return false;
-    }
+    //    @Value("${login.exclued.uri}")
+//    private String[] excludeUris;
 
-    private boolean isInclude(String uri) {
-        return !isExclued(uri);
-    }
+//    @Override
+//    public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
+//        if (isInclude(request.getRequestURI())) {
+//            if (SessionManager.INSTANCE.isNotLogin(request.getSession())) {
+//                response.sendRedirect(LOGIN_URI);
+//                return false;
+//            }
+//            request.setAttribute(LOGIN_USER,SessionManager.INSTANCE.getLoginUser(request.getSession()));
+//        }
+//        return true;
+//    }
+
+//    private boolean isExclued(String uri) {
+//        if (excludeUris != null && excludeUris.length > 0 ) {
+//            for (String excludeUri : excludeUris) {
+//                if (StringUtils.isNotBlank(excludeUri) && excludeUri.trim().equals(uri)) {
+//                    return true;
+//                }
+//            }
+//        }
+//        return false;
+//    }
+//
+//    private boolean isInclude(String uri) {
+//        return !isExclued(uri);
+//    }
 }
