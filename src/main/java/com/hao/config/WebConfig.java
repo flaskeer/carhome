@@ -5,6 +5,7 @@ import com.hao.util.csrf.CSRFInterceptor;
 import com.hao.util.session.SessionInterceptor;
 import org.springframework.context.ResourceLoaderAware;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.http.converter.ByteArrayHttpMessageConverter;
@@ -17,6 +18,9 @@ import org.springframework.http.converter.xml.SourceHttpMessageConverter;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurationSupport;
+import org.springframework.web.servlet.view.velocity.VelocityConfigurer;
+import org.springframework.web.servlet.view.velocity.VelocityLayoutView;
+import org.springframework.web.servlet.view.velocity.VelocityLayoutViewResolver;
 
 import java.util.List;
 
@@ -24,6 +28,7 @@ import java.util.List;
  * Created by user on 2016/2/17
  */
 @Configuration
+@ComponentScan(basePackages = "com.hao.controller")
 public class WebConfig extends WebMvcConfigurationSupport implements ResourceLoaderAware{
 
 
@@ -88,6 +93,27 @@ public class WebConfig extends WebMvcConfigurationSupport implements ResourceLoa
     protected void addInterceptors(InterceptorRegistry registry) {
         registry.addInterceptor(sessionInterceptor());
         registry.addInterceptor(csrfInterceptor());
+    }
+
+    @Bean(name = "velocityConfig")
+    public VelocityConfigurer velocityConfig() {
+        VelocityConfigurer configurer = new VelocityConfigurer();
+        configurer.setConfigLocation(resourceLoader.getResource("classpath:/velocity.properties"));
+        return configurer;
+    }
+
+    @Bean(name = "viewResolver")
+    public VelocityLayoutViewResolver viewResolver() {
+        VelocityLayoutViewResolver velocityLayoutViewResolver = new VelocityLayoutViewResolver();
+        velocityLayoutViewResolver.setCache(false);
+        velocityLayoutViewResolver.setPrefix("/templates/view");
+        velocityLayoutViewResolver.setLayoutUrl("/templates/layout/layout.vm");
+        velocityLayoutViewResolver.setSuffix("vm");
+        velocityLayoutViewResolver.setExposeSpringMacroHelpers(true);
+        velocityLayoutViewResolver.setContentType("text/html;charset=UTF-8");
+        velocityLayoutViewResolver.setRequestContextAttribute("ctx");
+        velocityLayoutViewResolver.setViewClass(VelocityLayoutView.class);
+        return velocityLayoutViewResolver;
     }
 
     @Override

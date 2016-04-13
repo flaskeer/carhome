@@ -1,0 +1,10 @@
+#set($parentMenu= "index")
+
+<div class="content animate-panel">
+    <div class="row">
+        <div class="col-lg-12 text-center m-t-md">
+            <h2>欢迎使用</h2>
+            <p>首页还没规划好 可以访问其他页面 也可以提建议 敬请期待.....</p>
+        </div>
+    </div>
+</div>
