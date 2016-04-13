@@ -37,4 +37,15 @@ public class TaskTracker {
         },60,60, TimeUnit.SECONDS);
     }
 
+    public Result invoke(Job job) throws Throwable {
+        JobRunner runner = (JobRunner) clazz.newInstance();
+        try {
+            Result result = runner.run(job);
+            return result == null ? null : result;
+        } catch (Throwable t) {
+            throw t;
+        }
+
+    }
+
 }
