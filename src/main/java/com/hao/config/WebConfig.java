@@ -3,6 +3,7 @@ package com.hao.config;
 import com.google.common.base.Charsets;
 import com.hao.util.csrf.CSRFInterceptor;
 import com.hao.util.session.SessionInterceptor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ResourceLoaderAware;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
@@ -28,8 +29,11 @@ import java.util.List;
  * Created by user on 2016/2/17
  */
 @Configuration
-@ComponentScan(basePackages = "com.hao.controller")
+@ComponentScan
 public class WebConfig extends WebMvcConfigurationSupport implements ResourceLoaderAware{
+
+    @Value("${login.exclude.uri}")
+    private String[] excludeUris;
 
 
     private ResourceLoader resourceLoader;
@@ -86,14 +90,16 @@ public class WebConfig extends WebMvcConfigurationSupport implements ResourceLoa
 
     @Override
     protected void addResourceHandlers(ResourceHandlerRegistry registry) {
-        registry.addResourceHandler("/**").addResourceLocations("/");
+        registry.addResourceHandler("classpath:/static/**").addResourceLocations("classpath:/static");
     }
 
     @Override
     protected void addInterceptors(InterceptorRegistry registry) {
-        registry.addInterceptor(sessionInterceptor());
+        registry.addInterceptor(sessionInterceptor()).addPathPatterns("/**").excludePathPatterns(excludeUris);
         registry.addInterceptor(csrfInterceptor());
     }
+
+
 
     @Bean(name = "velocityConfig")
     public VelocityConfigurer velocityConfig() {
@@ -106,13 +112,14 @@ public class WebConfig extends WebMvcConfigurationSupport implements ResourceLoa
     public VelocityLayoutViewResolver viewResolver() {
         VelocityLayoutViewResolver velocityLayoutViewResolver = new VelocityLayoutViewResolver();
         velocityLayoutViewResolver.setCache(false);
-        velocityLayoutViewResolver.setPrefix("/templates/view");
+        velocityLayoutViewResolver.setPrefix("/templates/view/");
         velocityLayoutViewResolver.setLayoutUrl("/templates/layout/layout.vm");
-        velocityLayoutViewResolver.setSuffix("vm");
+        velocityLayoutViewResolver.setSuffix(".vm");
         velocityLayoutViewResolver.setExposeSpringMacroHelpers(true);
         velocityLayoutViewResolver.setContentType("text/html;charset=UTF-8");
         velocityLayoutViewResolver.setRequestContextAttribute("ctx");
         velocityLayoutViewResolver.setViewClass(VelocityLayoutView.class);
+        System.out.println("wwwwww:" + velocityLayoutViewResolver.toString());
         return velocityLayoutViewResolver;
     }
 
