@@ -3,7 +3,9 @@ package com.hao.config;
 import com.google.common.base.Charsets;
 import com.hao.util.csrf.CSRFInterceptor;
 import com.hao.util.session.SessionInterceptor;
+import com.hao.util.xss.XssFilter;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.context.embedded.FilterRegistrationBean;
 import org.springframework.context.ResourceLoaderAware;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
@@ -120,6 +122,19 @@ public class WebConfig extends WebMvcConfigurationSupport implements ResourceLoa
         velocityLayoutViewResolver.setRequestContextAttribute("ctx");
         velocityLayoutViewResolver.setViewClass(VelocityLayoutView.class);
         return velocityLayoutViewResolver;
+    }
+
+    @Bean(name = "xssFilter")
+    public XssFilter xssFilter() {
+        return new XssFilter();
+    }
+
+    @Bean
+    public FilterRegistrationBean xssFilterRegistrationBean() {
+        FilterRegistrationBean registrationBean = new FilterRegistrationBean();
+        registrationBean.setFilter(xssFilter());
+        registrationBean.addUrlPatterns("/*");
+        return registrationBean;
     }
 
     @Override
