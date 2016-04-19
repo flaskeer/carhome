@@ -31,7 +31,7 @@ import java.util.List;
  * Created by user on 2016/2/17
  */
 @Configuration
-@ComponentScan
+@ComponentScan(basePackages = "com.hao.controller")
 public class WebConfig extends WebMvcConfigurationSupport implements ResourceLoaderAware{
 
     @Value("${login.exclude.uri}")
@@ -97,7 +97,7 @@ public class WebConfig extends WebMvcConfigurationSupport implements ResourceLoa
 
     @Override
     protected void addInterceptors(InterceptorRegistry registry) {
-        registry.addInterceptor(sessionInterceptor()).addPathPatterns("/**").excludePathPatterns(excludeUris);
+        registry.addInterceptor(sessionInterceptor()).addPathPatterns("/**").excludePathPatterns(excludeUris).excludePathPatterns("/user/isLogin");
         registry.addInterceptor(csrfInterceptor());
     }
 
@@ -114,7 +114,7 @@ public class WebConfig extends WebMvcConfigurationSupport implements ResourceLoa
     public VelocityLayoutViewResolver viewResolver() {
         VelocityLayoutViewResolver velocityLayoutViewResolver = new VelocityLayoutViewResolver();
         velocityLayoutViewResolver.setCache(false);
-        velocityLayoutViewResolver.setPrefix("/templates/view");
+        velocityLayoutViewResolver.setPrefix("/templates");
         velocityLayoutViewResolver.setLayoutUrl("/templates/layout/layout.vm");
         velocityLayoutViewResolver.setSuffix(".vm");
         velocityLayoutViewResolver.setExposeSpringMacroHelpers(true);
