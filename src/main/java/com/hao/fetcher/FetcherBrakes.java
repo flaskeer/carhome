@@ -8,9 +8,11 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
+import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import static com.hao.common.Commons.*;
 /**
@@ -126,15 +128,54 @@ public class FetcherBrakes {
         Elements trElems = content.select(".query01 > table > tbody > tr");
         List<List<String>> dataList = Lists.newArrayListWithCapacity(trElems.size());
         for (Element trElem : trElems) {
+            String href = trElem.select("td > a").attr("href");
+            href = href.replace(" ","%20");
+            String specUrl = "http://qichechaxun15.cw503.4everdns.com/" + href;
+
+            System.out.println("now downloading spec url:" + specUrl);
+            List<String> param = getParam(specUrl);
             Elements tdElems = trElem.select("td");
             List<String> data = Lists.newArrayList();
             for (Element tdElem : tdElems) {
                 data.add(tdElem.text());
             }
+
+            data.addAll(param);
             dataList.add(data);
         }
+        System.out.println(dataList);
         return dataList;
 
+    }
+
+    public static List<String> getParam(String specUrl) {
+        if (Objects.equals(specUrl,"http://qichechaxun15.cw503.4everdns.com/")) {
+            return Collections.emptyList();
+        }
+
+        if (!specUrl.startsWith("http://qichechaxun15.cw503.4everdns.com/query_detail.aspx?user_email=&")) {
+            return Collections.emptyList();
+        }
+        Document content = getDocument(specUrl, "UTF-8");
+        if (content == null) {
+            getParam(specUrl);
+        }
+        List<String> params = Lists.newArrayList();
+        String param = content.select(".query_right02").get(0).text();
+        String imgHref = content.select(".bd > ul > img").attr("src");
+        if (Objects.equals(imgHref, "")) {
+            imgHref = content.select(".bd > ul > li > img").attr("src");
+        }
+            try {
+                imgHref = URLEncoder.encode(imgHref, "UTF-8");
+                imgHref.replace("%2F",".");
+            } catch (UnsupportedEncodingException e) {
+                e.printStackTrace();
+            }
+        String imgUrl = "http://qichechaxun15.cw503.4everdns.com/" + imgHref;
+        params.add(param);
+        params.add(imgUrl);
+        return params;
     }
 
     public static void execute(String storePath) throws Exception {
@@ -171,8 +212,9 @@ public class FetcherBrakes {
 //        getBrands();
 //        getManufacturer("奔腾");
 //        getType("本田","本田");
-//        getSpecData("奥迪","奥迪","A3 Limousine","前轴","刹车盘");
-        execute("D:/tmp/brakes_0418.txt");
+//        getSpecData("保时捷","保时捷","Cayman","前轴","刹车盘");
+//        getParam("http://qichechaxun15.cw503.4everdns.com/query_detail.aspx?user_email=17");
+        execute("D:/tmp/brakes_0419_test.txt");
     }
 
 }
