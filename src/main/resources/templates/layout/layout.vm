@@ -1,0 +1,20 @@
+<!doctype html>
+<html>
+<head>
+    #parse("/templates/fragement/head.vm")
+</head>
+<body>
+    #parse("/templates/fragement/splash.vm")
+    #parse("/templates/fragement/header.vm")
+    #parse("/templates/fragement/menu.vm")
+
+    <div id="wrapper">
+        ${screen_content}
+        <footer class="footer">
+            <span class="pull-right">Based on <a href="http://github.com/Mashape/kong" target="_blank">kong</a></span>
+        </footer>
+    </div>
+
+    #parse("/templates/fragement/footer.vm")
+</body>
+</html>

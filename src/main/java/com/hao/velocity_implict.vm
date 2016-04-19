@@ -1,0 +1,13 @@
+#*@implicitly included *#
+
+#*Define global variables *#
+#* @vtlvariable name="pageTitle" type="java.lang.String" *#
+#* @vtlvariable name="pageStyles" type="java.util.List<java.lang.String>" *#
+#* @vtlvariable name="ctx" type="org.springframework.web.servlet.support.RequestContext" *#
+#* @vtlvariable name="request" type="javax.servlet.http.HttpServletRequest" *#
+
+#* File specificed variables *#
+#* @vtlvariable name="screen_content" type="java.lang.Object" file="/templates/layout/layout.vm" *#
+#* @vtlvariable name="screen_content" type="java.lang.Object" file="/templates/layout/page.vm" *#
+
+#* Define macros *#

@@ -27,7 +27,10 @@ public class FetcherBrakes {
         generalForm.put("__EVENTTARGET","");
         generalForm.put("__EVENTARGUMENT","");
         generalForm.put("__LASTFOCUS","");
-        generalForm.put("__VIEWSTATE","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");
+
+
+        generalForm.put("__VIEWSTATE","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");
+
         generalForm.put("__VIEWSTATEGENERATOR","EDD8C9AE");
     }
 
@@ -37,6 +40,11 @@ public class FetcherBrakes {
         if (content == null) {
             getBrands();
         }
+
+        Elements viewState = content.select("#__VIEWSTATE");
+        String value = viewState.attr("value");
+        generalForm.put("__VIEWSTATE",value);
+
         Elements optElems = content.select("#DropDownList1 > option");
         List<String> brands = Lists.newArrayList();
         optElems.stream().filter(optElem -> !optElem.text().equals("选择-品牌")).forEach(optElem -> brands.add(optElem.text()));
@@ -56,6 +64,7 @@ public class FetcherBrakes {
         Elements viewState = content.select("#__VIEWSTATE");
         String value = viewState.attr("value");
         generalForm.put("__VIEWSTATE",value);// 这个值必须替换成正确的值  否则取不到数据
+        System.out.println(generalForm);
         Elements optElems = content.select("#DropDownList2 > option");
         List<String> manus = Lists.newArrayList();
         optElems.stream().filter(optElem -> !optElem.text().equals("选择-制造商")).forEach(optElem -> manus.add(optElem.text()));
@@ -72,6 +81,11 @@ public class FetcherBrakes {
             getType(brand,manu);
         }
         Document content = Jsoup.parse(html);
+
+        Elements viewState = content.select("#__VIEWSTATE");
+        String value = viewState.attr("value");
+        generalForm.put("__VIEWSTATE",value);
+
         Elements optElems1 = content.select("#DropDownList3 > option");
         List<String> types = Lists.newArrayList();   // 车型
         optElems1.stream().filter(optElem -> !optElem.text().equals("选择-车型")).forEach(optElem -> types.add(optElem.text()));
@@ -96,12 +110,19 @@ public class FetcherBrakes {
         form.put("DropDownList3",type);
         form.put("TextBox1",axis);
         form.put("DropDownList4",productLine);
-
+        form.put("TextBox2","");
+        form.put("ImageButton1.x","35");   //最好给个随机值  必须加上 否则取不到值
+        form.put("ImageButton1.y","6");  //最好给个随机值   必须加上 否则取不到值  很操蛋的问题
         String html = HttpClientUtil.sendHttpPost(url, form);
         if (html == null) {
             getSpecData(brand, manu, type, axis, productLine);
         }
         Document content = Jsoup.parse(html);
+
+        Elements viewState = content.select("#__VIEWSTATE");
+        String value = viewState.attr("value");
+        generalForm.put("__VIEWSTATE",value);
+
         Elements trElems = content.select(".query01 > table > tbody > tr");
         List<List<String>> dataList = Lists.newArrayListWithCapacity(trElems.size());
         for (Element trElem : trElems) {
@@ -116,7 +137,7 @@ public class FetcherBrakes {
 
     }
 
-    public static void execute() throws Exception {
+    public static void execute(String storePath) throws Exception {
         List<String> brands = getBrands();
         for (String brand : brands) {
             List<String> manufacturers = getManufacturer(brand);
@@ -130,7 +151,12 @@ public class FetcherBrakes {
                         for (String productLine : productLines) {
                             List<List<String>> specDataList = getSpecData(brand, manufacturer, type, axi, productLine);
                             for (List<String> specData : specDataList) {
-                                System.out.println(brand + manufacturer + type + axi + productLine + specData);
+                                String result = "";
+                                for (String s : specData) {
+                                    result += "\"" + s + "\"" + ",";
+                                }
+                                System.out.println(result);
+                                writeStringtoFile(storePath,result + "\n",true);
                             }
                         }
                     }
@@ -146,7 +172,7 @@ public class FetcherBrakes {
 //        getManufacturer("奔腾");
 //        getType("本田","本田");
 //        getSpecData("奥迪","奥迪","A3 Limousine","前轴","刹车盘");
-        execute();
+        execute("D:/tmp/brakes_0418.txt");
     }
 
 }

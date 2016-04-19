@@ -1,4 +1,4 @@
-#set($layout="/layout/page.vm")
+###set($layout="/templates/layout/page.vm")
 #set($pageTitle="用户登录")
 
 <div class="login-container">
@@ -9,7 +9,7 @@
             </div>
             <div class="hpanel">
                 <div class="panel-body">
-                    <form action="${ctx}/admin/user/login" id="loginForm" method="post">
+                    <form action="${ctx.contextPath}/user/login" id="loginForm" method="post">
                         <div class="form-group">
                             <label for="userIdentity" class="control-label">用户名</label>
                             <input type="text" placeholder="你的登录名" title="请输入你的用户名"

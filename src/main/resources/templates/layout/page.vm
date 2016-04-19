@@ -1,0 +1,10 @@
+<html>
+<head>
+    #parse("/templates/fragement/head.vm")
+</head>
+<body class="blank">
+    #parse("/templates/fragement/splash.vm")
+    #{screen_content}
+    #parse("/templates/fragement/footer.vm")
+</body>
+</html>

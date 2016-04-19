@@ -90,7 +90,7 @@ public class WebConfig extends WebMvcConfigurationSupport implements ResourceLoa
 
     @Override
     protected void addResourceHandlers(ResourceHandlerRegistry registry) {
-        registry.addResourceHandler("classpath:/static/**").addResourceLocations("classpath:/static");
+        registry.addResourceHandler("/**").addResourceLocations("classpath:/static");
     }
 
     @Override
@@ -112,14 +112,13 @@ public class WebConfig extends WebMvcConfigurationSupport implements ResourceLoa
     public VelocityLayoutViewResolver viewResolver() {
         VelocityLayoutViewResolver velocityLayoutViewResolver = new VelocityLayoutViewResolver();
         velocityLayoutViewResolver.setCache(false);
-        velocityLayoutViewResolver.setPrefix("/templates/view/");
+        velocityLayoutViewResolver.setPrefix("/templates/view");
         velocityLayoutViewResolver.setLayoutUrl("/templates/layout/layout.vm");
         velocityLayoutViewResolver.setSuffix(".vm");
         velocityLayoutViewResolver.setExposeSpringMacroHelpers(true);
         velocityLayoutViewResolver.setContentType("text/html;charset=UTF-8");
         velocityLayoutViewResolver.setRequestContextAttribute("ctx");
         velocityLayoutViewResolver.setViewClass(VelocityLayoutView.class);
-        System.out.println("wwwwww:" + velocityLayoutViewResolver.toString());
         return velocityLayoutViewResolver;
     }
 

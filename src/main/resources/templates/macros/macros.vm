@@ -1,0 +1,17 @@
+#*
+menu node dynamic highlight
+ *#
+
+#macro( activeMenu $menuName $activeName )
+    #if($menuName == $activeName)
+        class="active"
+    #end
+#end
+
+#*
+ bread crumb navigation
+ *#
+
+#macro( breadCrumb $parentPage $pageDesc)
+
+#end
