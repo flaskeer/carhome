@@ -19,15 +19,15 @@
                 </button>
                 <div class="collapse mobile-navbar" id="mobile-collapse">
                     <ul class="nav navbar-nav">
-                        <li><a href="${ctx.contextPath}/#">修改密码</a></li>
-                        <li><a href="${ctx.contextPath}/user/logout">注销</a></li>
+                        <li><a href="/#">修改密码</a></li>
+                        <li><a href="/user/logout">注销</a></li>
                     </ul>
                 </div>
             </div>
             <div class="navbar-right">
                 <ul class="nav navbar-nav no-borders">
                     <li>
-                        <a href="${ctx.contextPath}/user/logout">
+                        <a href="/user/logout">
                           <i class="pe-7s-upload pe-rotate-90"></i>
                         </a>
                     </li>

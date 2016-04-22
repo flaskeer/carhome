@@ -1,12 +1,12 @@
 <!doctype html>
 <html>
 <head>
-    #parse("/templates/fragement/head.vm")
+    #parse("/head.vm")
 </head>
 <body>
-    #parse("/templates/fragement/splash.vm")
-    #parse("/templates/fragement/header.vm")
-    #parse("/templates/fragement/menu.vm")
+    #parse("/splash.vm")
+    #parse("/header.vm")
+    #parse("/menu.vm")
 
     <div id="wrapper">
         ${screen_content}
@@ -15,6 +15,6 @@
         </footer>
     </div>
 
-    #parse("/templates/fragement/footer.vm")
+    #parse("/footer.vm")
 </body>
 </html>

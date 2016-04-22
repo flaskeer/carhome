@@ -212,9 +212,9 @@ public class FetcherBrakes {
 //        getBrands();
 //        getManufacturer("奔腾");
 //        getType("本田","本田");
-//        getSpecData("保时捷","保时捷","Cayman","前轴","刹车盘");
+        getSpecData("保时捷","保时捷","Macan","后轴","刹车片");
 //        getParam("http://qichechaxun15.cw503.4everdns.com/query_detail.aspx?user_email=17");
-        execute("D:/tmp/brakes_0419_test.txt");
+//        execute("D:/tmp/brakes_0419_test.txt");
     }
 
 }

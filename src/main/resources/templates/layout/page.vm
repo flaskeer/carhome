@@ -1,10 +1,10 @@
 <html>
 <head>
-    #parse("/templates/fragement/head.vm")
+    #parse("/fragement/head.vm")
 </head>
 <body class="blank">
-    #parse("/templates/fragement/splash.vm")
+    #parse("/fragement/splash.vm")
     #{screen_content}
-    #parse("/templates/fragement/footer.vm")
+    #parse("/fragement/footer.vm")
 </body>
 </html>
