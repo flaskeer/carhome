@@ -1,0 +1,20 @@
+<!doctype html>
+<html>
+<head>
+    #parse("/head.vm")
+</head>
+<body>
+    #parse("/splash.vm")
+    #parse("/header.vm")
+    #parse("/menu.vm")
+
+    <div id="wrapper">
+        ${screen_content}
+        <footer class="footer">
+            <span class="pull-right">Based on <a href="http://github.com/Mashape/kong" target="_blank">kong</a></span>
+        </footer>
+    </div>
+
+    #parse("/footer.vm")
+</body>
+</html>

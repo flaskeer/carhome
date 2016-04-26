@@ -1,0 +1,151 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hao.mapper.UserRepo">
+
+    <insert id="add" parameterType="User" useGeneratedKeys="true" keyProperty="id">
+        <![CDATA[
+            INSERT INTO `USER` (
+              `USER_NAME`,
+              `USER_IDENTITY`,
+              `USER_EMAIL`,
+              `USER_PASSWORD`,
+              `USER_TYPE`,
+              `USER_SALT`
+            ) VALUES (
+              #{userName},
+              #{userIdentity},
+              #{userEmail},
+              #{userPassword},
+              #{userType},
+              #{userSalt}
+            )
+
+          ]]>
+
+    </insert>
+
+    <insert id="insert" parameterType="list" useGeneratedKeys="true" keyProperty="id" >
+        <![CDATA[
+              INSERT INTO `USER` (
+                `USER_NAME`,
+                `USER_IDENTITY`,
+                `USER_EMAIL`,
+                `USER_PASSWORD`,
+                `USER_TYPE`,
+                `USER_SALT`
+            ) VALUES
+        ]]>
+        <foreach collection="list" item="item" index="index" separator="," >
+            <![CDATA[
+                (
+                #{item.userName},
+                #{item.userIdentity},
+                #{item.userEmail},
+                #{item.userPassword},
+                #{item.userType},
+                #{item.userSalt}
+                )
+            ]]>
+        </foreach>
+    </insert>
+
+    <delete id="delete" parameterType="long" >
+        DELETE FROM `USER` WHEN `ID` = #{id}
+    </delete>
+
+    <update id="update" parameterType="User">
+        UPDATE `USER`
+        <include refid="setCondition" />
+        WHEN `ID` = #{id}
+    </update>
+
+    <select id="query" parameterType="User" resultMap="userResultMap" >
+        SELECT
+        <include refid="selectColumns" />
+        FROM `USER` WHEN `ID` = #{id}
+    </select>
+
+    <select id="queryExistUser" parameterType="User" resultMap="userResultMap" >
+        SELECT
+        <include refid="selectColumns" />
+        FROM `USER`
+        <where>
+            <if test="userIdentity != null and userIdentity != ''">
+                <![CDATA[OR `USER_IDENTITY` = #{userIdentity}]]>
+            </if>
+            <if test="userEmail != null and userEmail != ''">
+                <![CDATA[OR `USER_EMAIL` = #{userEmail}]]>
+            </if>
+        </where>
+    </select>
+
+    <sql id="setCondition">
+        <set>
+            <if test="userName != null">
+                <![CDATA[ `USER_NAME` = #{userName}, ]]>
+            </if>
+            <if test="userEmail != null">
+                <![CDATA[ `USER_EMAIL` = #{userEmail}, ]]>
+            </if>
+            <if test="userType != null">
+                <![CDATA[ `USER_TYPE` = #{userType}, ]]>
+            </if>
+            <if test="lastLoginDate != null">
+                <![CDATA[ `LAST_LOGIN_DATE` = #{lastLoginDate}, ]]>
+            </if>
+            <if test="userStatus != null">
+                <![CDATA[ `USER_STATUS` = #{userStatus}, ]]>
+            </if>
+            <if test="userPassword != null">
+                <![CDATA[ `USER_PASSWORD` = #{userPassword}, ]]>
+            </if>
+            <if test="userSalt != null">
+                <![CDATA[ `USER_SALT` = #{userSalt}, ]]>
+            </if>
+        </set>
+    </sql>
+
+    <sql id="whereCondition">
+        <where>
+            <if test="id != null and id != ''">
+                <![CDATA[  AND `ID` = #{id} ]]>
+            </if>
+            <if test="userName != null">
+                <![CDATA[  AND `USER_NAME` = #{userName} ]]>
+            </if>
+            <if test="userIdentity != null">
+                <![CDATA[  AND `USER_IDENTITY` = #{userIdentity} ]]>
+            </if>
+            <if test="userEmail != null">
+                <![CDATA[  AND `USER_EMAIL` = #{userEmail} ]]>
+            </if>
+            <if test="userType != null">
+                <![CDATA[  AND `USER_TYPE` = #{userType} ]]>
+            </if>
+            <if test="lastLoginDate != null">
+                <![CDATA[  AND `LAST_LOGIN_DATE` = #{lastLoginDate} ]]>
+            </if>
+            <if test="userStatus != null">
+                <![CDATA[  AND `USER_STATUS` = #{userStatus} ]]>
+            </if>
+            <if test="userPassword != null">
+                <![CDATA[  AND `USER_PASSWORD` = #{userPassword} ]]>
+            </if>
+        </where>
+    </sql>
+
+    <sql id="selectColumns">
+        `ID` ,`USER_NAME`, `USER_IDENTITY`, `USER_TYPE`, `USER_PASSWORD`, `USER_STATUS`, `LAST_LOGIN_DATE`, `USER_EMAIL`, `USER_SALT`
+    </sql>
+
+    <resultMap id="userResultMap" type="User">
+        <id property="id" column="ID" />
+        <result property="userName" column="USER_NAME"/>
+        <result property="userIdentity" column="USER_IDENTITY"/>
+        <result property="userPassword" column="USER_PASSWORD"/>
+        <result property="userEmail" column="USER_EMAIL"/>
+        <result property="lastLoginDate" column="LAST_LOGIN_DATE"/>
+        <result property="salt" column="USER_SALT"/>
+    </resultMap>
+
+</mapper>
