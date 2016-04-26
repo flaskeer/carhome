@@ -1,5 +1,6 @@
 package com.hao.util;
 
+import com.alibaba.fastjson.JSONObject;
 import com.google.common.collect.Lists;
 import org.apache.commons.io.IOUtils;
 import org.apache.http.HttpEntity;
@@ -9,13 +10,13 @@ import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
+import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.util.EntityUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
@@ -125,6 +126,18 @@ public class HttpClientUtil {
         List<NameValuePair> nameValuePairs = Lists.newArrayList();
         maps.forEach((k,v) -> nameValuePairs.add(new BasicNameValuePair(k,v)));
         httpPost.setEntity(new UrlEncodedFormEntity(nameValuePairs,"utf-8"));
+        return sendHttpPost(httpPost);
+    }
+
+    public static String sendJsonHttpPost(String url,Map<String,String> map) {
+        HttpPost httpPost = new HttpPost(url);
+        JSONObject jsonObject = new JSONObject();
+        map.forEach(jsonObject::put);
+        String transJson = jsonObject.toJSONString();
+        StringEntity requestEntity = new StringEntity(transJson,"utf-8");
+        requestEntity.setContentEncoding("UTF-8");
+        requestEntity.setContentType("application/json");
+        httpPost.setEntity(requestEntity);
         return sendHttpPost(httpPost);
     }
 
