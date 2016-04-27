@@ -130,9 +130,6 @@ public class Commons {
 
 
     public static Table<String,String,String> parseJson(String json,String typeItems,String items,String valueorName,String[] ids){
-//        List<Table<String,String,String>> lists = Lists.newArrayListWithExpectedSize(ids.length);
-//        List<List<Table<String,String,String>>> results = Lists.newArrayList();
-//        Map<String,String> map = Maps.newHashMap();
         Table<String,String,String> table = HashBasedTable.create();
         JSONObject jsonObject = JSON.parseObject(json);
         JSONArray jsonArray = jsonObject.getJSONObject("result").getJSONArray(typeItems);
@@ -145,14 +142,8 @@ public class Commons {
                 for (int j = 0; j < jsonArray2.size(); j++) {
                     String specId = jsonArray2.getJSONObject(j).getString("specid");
                     String value = jsonArray2.getJSONObject(j).getString(valueorName);
-//                    map.put(specId,value);
                     table.put(name,specId,value);
-//                    lists.add(table);
-//                    table = HashBasedTable.create();
-//                    map = Maps.newHashMap();
                 }
-//                results.add(lists);
-//                lists = Lists.newArrayListWithCapacity(ids.length);
             }
         }
         return table;
