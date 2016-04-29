@@ -30,26 +30,7 @@
 
 	<dependencies>
 
-		<dependency>
-			<groupId>com.squareup.retrofit2</groupId>
-			<artifactId>retrofit-mock</artifactId>
-			<version>${retrofit.version}</version>
-			<optional>true</optional>
-			<scope>test</scope>
-		</dependency>
 
-		<dependency>
-			<groupId>com.squareup.retrofit2</groupId>
-			<artifactId>adapter-java8</artifactId>
-			<version>${retrofit.version}</version>
-		</dependency>
-
-		<dependency>
-			<groupId>com.squareup.okhttp3</groupId>
-			<artifactId>mockwebserver</artifactId>
-			<version>${okhttp.version}</version>
-			<scope>test</scope>
-		</dependency>
 
 		<dependency>
 			<groupId>org.projectlombok</groupId>

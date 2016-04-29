@@ -212,7 +212,7 @@ public class FetcherTrwafterMarket {
 //        day01Map.put(" 阿斯顿·马丁 (进口)","881");
 //        day01Map.put("阿维亚 (进口)","132");
 //        day01Map.put("奥迪 (进口)=5","5");
-        parseModels(map,filePath);
+//        parseModels(map,filePath);
         parseChinaModels(map,filePath);
     }
 
